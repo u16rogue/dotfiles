@@ -43,7 +43,6 @@ Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'tpope/vim-ragtag'
 Plug 'ziglang/zig.vim'
 Plug 'bfrg/vim-cpp-modern'
-"Plug 'p00f/clangd_extensions.nvim'
 
 "" -- [[ MASON + NVIM-LSP ]] --
 "Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
