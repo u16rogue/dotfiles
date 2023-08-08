@@ -45,7 +45,7 @@ Plug 'ziglang/zig.vim'
 Plug 'bfrg/vim-cpp-modern'
 
 "" -- [[ MASON + NVIM-LSP ]] --
-"Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
+Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
 "Plug 'williamboman/mason-lspconfig.nvim'
 "Plug 'neovim/nvim-lspconfig'
 "Plug 'hrsh7th/cmp-nvim-lsp'
@@ -62,12 +62,15 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Integration Development
 Plug 'skywind3000/asyncrun.vim'
 
+" Debugging
+"Plug 'mfussenegger/nvim-dap'
+
 call plug#end()
 
 " -- Config (n)Vim
 colorscheme catppuccin-mocha
 highlight LineNr guifg=#fff
-lua <<EOF
+lua << EOF
   vim.diagnostic.config({
     -- virtual_text = false,
     update_in_insert = false,
@@ -178,19 +181,23 @@ nnoremap <silent> <A-t>   <Cmd>BufferPick<CR>
 let g:zig_fmt_autosave = 0
  
 "" -- Config Telescope
-nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
-nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
-nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+lua << EOF
+local telescope = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', function () telescope.find_files() end)
+vim.keymap.set('n', '<leader>fg', function () telescope.live_grep() end)
+vim.keymap.set('n', '<leader>fb', function () telescope.buffers() end)
+vim.keymap.set('n', '<leader>fh', function () telescope.help_tags() end)
+EOF
 
-"" -- Config vim svelte
+
+"" -- Config vim-svelte
 let g:vim_svelte_plugin_use_typescript = 1
 
 "" -- [[ COC ]] --
+inoremap <silent><expr> <C-e> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <silent><expr> <C-d>
       \ coc#pum#visible() ? coc#pum#next(1) :
       \ coc#refresh()
-inoremap <silent><expr> <C-e> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <silent><expr> <C-f> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
@@ -204,8 +211,8 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 "" -- [[ MASON + NVIM LSP ]] --
-"lua <<EOF
-"  require("mason").setup()
+lua require("mason").setup() 
+"lua << EOF
 "  require("mason-lspconfig").setup()
 "
 "  -- Set up nvim-cmp.
@@ -333,11 +340,12 @@ nmap <silent> gr <Plug>(coc-references)
 "      -- See `:help vim.lsp.*` for documentation on any of the below functions
 "      local opts = { buffer = ev.buf }
 "      
-"      vim.keymap.set('n', '<leader>\\', function () vim.diagnostic.open_float(nil, {focus=false}) end)
+"      vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
 "      vim.keymap.set('n', '<leader>]', vim.diagnostic.goto_next)
 "      vim.keymap.set('n', '<leader>[', vim.diagnostic.goto_prev)
-"      vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+"      vim.keymap.set('n', '<leader>\\', function () vim.diagnostic.open_float(nil, {focus=false}) end)
 "      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+"      vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 "      vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 "      vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
 "      vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
@@ -347,7 +355,6 @@ nmap <silent> gr <Plug>(coc-references)
 "        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 "      end, opts)
 "      vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-"      vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
 "    end,
 "  })
 "
@@ -356,4 +363,41 @@ nmap <silent> gr <Plug>(coc-references)
 "  --   dynamicRegistration = true,
 "  --   relativePatternSupport = true,
 "  -- }
+"
+"EOF
+
+" -- [[ DAP ]]--
+"lua << EOF
+"local dap = require('dap')
+"
+"local dconf = {
+"  {
+"    name = "Launch file",
+"    type = "codelldb",
+"    request = "launch",
+"    program = function()
+"      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+"    end,
+"    cwd = '${workspaceFolder}',
+"    stopOnEntry = false,
+"  },
+"}
+"
+"dap.adapters.codelldb = {
+"  type = 'server',
+"  port = "13000",
+"  executable = {
+"    -- USE MASON
+"    command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
+"    args = {"--port", "13000"},
+"    -- On windows you may have to uncomment this:
+"    -- detached = false,
+"  }
+"}
+"
+"vim.keymap.set('n', '<leader><F6>', function () dap.toggle_breakpoint() end)
+"vim.keymap.set('n', '<leader><F7>', function () dap.step_into() end)
+"vim.keymap.set('n', '<leader><F8>', function () dap.step_over() end)
+"vim.keymap.set('n', '<leader><F9>', function () dap.continue() end)
+"vim.keymap.set('n', '<leader><F10>', function () dap.repl.open() end)
 "EOF
