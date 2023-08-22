@@ -63,7 +63,9 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'skywind3000/asyncrun.vim'
 
 " Debugging
-"Plug 'mfussenegger/nvim-dap'
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'theHamsta/nvim-dap-virtual-text'
 
 call plug#end()
 
@@ -367,37 +369,69 @@ lua require("mason").setup()
 "EOF
 
 " -- [[ DAP ]]--
-"lua << EOF
-"local dap = require('dap')
-"
-"local dconf = {
-"  {
-"    name = "Launch file",
-"    type = "codelldb",
-"    request = "launch",
-"    program = function()
-"      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-"    end,
-"    cwd = '${workspaceFolder}',
-"    stopOnEntry = false,
-"  },
-"}
-"
-"dap.adapters.codelldb = {
-"  type = 'server',
-"  port = "13000",
-"  executable = {
-"    -- USE MASON
-"    command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
-"    args = {"--port", "13000"},
-"    -- On windows you may have to uncomment this:
-"    -- detached = false,
-"  }
-"}
-"
-"vim.keymap.set('n', '<leader><F6>', function () dap.toggle_breakpoint() end)
-"vim.keymap.set('n', '<leader><F7>', function () dap.step_into() end)
-"vim.keymap.set('n', '<leader><F8>', function () dap.step_over() end)
-"vim.keymap.set('n', '<leader><F9>', function () dap.continue() end)
-"vim.keymap.set('n', '<leader><F10>', function () dap.repl.open() end)
-"EOF
+lua << EOF
+local dap = require('dap')
+
+local dconf = {
+  {
+    name = "Launch file",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+}
+
+dap.adapters.codelldb = {
+  type = 'server',
+  host = '127.0.0.1',
+  port = "13000",
+  executable = {
+    -- USE MASON
+    command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
+    args = {"--port", "13000"},
+    -- On windows you may have to uncomment this:
+    -- detached = false,
+  }
+}
+
+dap.configurations.cpp = {
+  {
+    name = "Launch file",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+  },
+}
+
+vim.keymap.set('n', '<leader><F6>', function () dap.toggle_breakpoint() end)
+vim.keymap.set('n', '<leader><F7>', function () dap.step_into() end)
+vim.keymap.set('n', '<leader><F8>', function () dap.step_over() end)
+vim.keymap.set('n', '<leader><F9>', function () dap.continue() end)
+vim.keymap.set('n', '<leader><F10>', function () dap.repl.open() end)
+
+local dapui = require('dapui')
+dapui.setup()
+vim.keymap.set('n', '<leader><F11>', function () dapui.toggle() end)
+
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
+local dapvtext = require("nvim-dap-virtual-text")
+dapvtext.setup()
+
+EOF
