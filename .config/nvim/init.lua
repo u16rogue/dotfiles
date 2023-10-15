@@ -5,28 +5,29 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.o.tabstop       = 2
-vim.o.softtabstop   = 2
-vim.o.shiftwidth    = 2
-vim.o.expandtab     = true
+vim.opt.tabstop        = 2
+vim.opt.softtabstop    = 2
+vim.opt.shiftwidth     = 2
+vim.opt.expandtab      = true
 
-vim.o.autoindent    = true
-vim.o.copyindent    = true
+vim.opt.autoindent     = true
+vim.opt.copyindent     = true
 
-vim.o.cmdheight     = 0
-vim.o.showmode      = false
-vim.o.signcolumn    = 'yes'
+vim.opt.cmdheight      = 0
+vim.opt.showmode       = false
+vim.opt.signcolumn     = 'yes'
 
-vim.o.number        = true
-vim.o.showcmd       = true
-vim.o.wildmenu      = true
-vim.o.showmatch     = true
+vim.opt.number         = true
+vim.opt.showcmd        = true
+vim.opt.wildmenu       = true
+vim.opt.showmatch      = true
 
-vim.o.termguicolors = true
-vim.o.linebreak     = true
-vim.o.pumheight     = 10
+vim.opt.termguicolors  = true
+vim.opt.linebreak      = true
+vim.opt.pumheight      = 10
+vim.opt.relativenumber = true
 
-vim.opt.list        = true
+vim.opt.list           = true
 vim.opt.listchars:append 'space:⋅'
 vim.opt.listchars:append 'eol:↴'
 
@@ -171,8 +172,6 @@ lazy.setup({
     },
   },
 
-  --[[
-  -- Disabled temporarily: Slows down movement
   { 'lukas-reineke/indent-blankline.nvim',
     main = 'ibl',
     opts = {
@@ -187,7 +186,6 @@ lazy.setup({
       },
     },
   },
-  ]]--
 
   -- [[ MASON + NVIM-LSP ]] --
   { 'williamboman/mason.nvim',
@@ -253,8 +251,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.keymap.set('n', '<F1>', '<Cmd>NvimTreeToggle<CR>',      { silent = true })
 vim.keymap.set('i', '<F1>', '<Esc><Cmd>NvimTreeToggle<CR>', { silent = true })
 
---[[
--- Disabled temporarily: Slows down movement
 -- Config Indent highlight
 local highlight = {
     'RainbowRed',
@@ -280,7 +276,6 @@ hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
 end)
 
 require('ibl').setup { indent = { highlight = highlight } }
-]]--
 
 -- Config BarBar
 vim.keymap.set('n', '<A-z>',   '<Cmd>BufferPrevious<CR>',     { silent = true })
