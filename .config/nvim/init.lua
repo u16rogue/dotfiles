@@ -177,16 +177,19 @@ lazy.setup({
 
   { 'lukas-reineke/indent-blankline.nvim',
     main = 'ibl',
+    --[[
     opts = {
       indent = {
-        char = '│',
+        char = '┋', --'│',
       },
       scope = {
         -- This is the horizontal bar
+        enabled = false,
         show_start = false,
         show_end = false,
       },
     },
+    ]]--
   },
 
   -- [[ MASON + NVIM-LSP ]] --
@@ -224,23 +227,27 @@ lazy.setup({
   'leafOfTree/vim-svelte-plugin',
   'ziglang/zig.vim',
   'bfrg/vim-cpp-modern',
-
-  -- Auto pair parentheses
-  { 'windwp/nvim-autopairs', opts = {} },
-  -- Comment plugin
-  { 'numToStr/Comment.nvim', opts = {} },
+ 
   -- Multi-case, regex replace
   'tpope/vim-abolish',
+
   -- Align plugin
   'junegunn/vim-easy-align',
+
+  -- Comment plugin // having issues
+  -- { 'numToStr/Comment.nvim', opts = {} },
+
+  -- Auto pair parentheses // still applies when there's already an end delimeter
+  -- { 'windwp/nvim-autopairs', opts = {} },
+  
   --[[
   { 'akinsho/toggleterm.nvim',
-   version = '*',
-   opts = {
-     autochdir = true,
-     direction = 'horizontal',
-     persist_mode = false,
-   },
+    version = '*',
+    opts = {
+      autochdir = true,
+      direction = 'horizontal',
+      persist_mode = false,
+    },
   },
   ]]--
 })
@@ -295,7 +302,18 @@ hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
     vim.api.nvim_set_hl(0, 'RainbowCyan',   { fg = '#56B6C2' })
 end)
 
-require('ibl').setup { indent = { highlight = highlight } }
+require('ibl').setup {
+  indent = {
+    char = '┋', --'│',
+    highlight = highlight
+  },
+  scope = {
+    -- This is the horizontal bar
+    enabled = false,
+    show_start = false,
+    show_end = false,
+  },
+}
 
 -- Config BarBar
 vim.keymap.set('n', '<A-z>',   '<Cmd>BufferPrevious<CR>',     { silent = true })
