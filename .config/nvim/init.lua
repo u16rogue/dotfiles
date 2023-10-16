@@ -28,7 +28,7 @@ vim.opt.showmatch      = true
 vim.opt.termguicolors  = true
 vim.opt.linebreak      = true
 vim.opt.pumheight      = 10
-vim.opt.relativenumber = true
+-- vim.opt.relativenumber = true
 
 vim.opt.clipboard      = 'unnamedplus'
 
@@ -48,8 +48,8 @@ vim.opt.listchars:append 'eol:↴'
 vim.keymap.set('n', '<cr>', 'o<esc>', { silent = true })
 
 -- Easy align
-vim.keymap.set('x', 'ga', '<plug>(EasyAlign)', { silent = true })
-vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
+vim.keymap.set('x', '<leader>a', '<plug>(EasyAlign)', { silent = true })
+--vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
 
 vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
 vim.api.nvim_create_autocmd('RecordingLeave', { callback = function() vim.o.cmdheight = 0 end })
@@ -128,9 +128,6 @@ lazy.setup({
 
   -- Tree-sitter
   { 'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      -- 'nvim-treesitter/nvim-treesitter-textobjects',
-    },
     build = ':TSUpdate',
   },
   { 'nvim-treesitter/nvim-treesitter-context', opts = {} },
@@ -236,6 +233,16 @@ lazy.setup({
   'tpope/vim-abolish',
   -- Align plugin
   'junegunn/vim-easy-align',
+  --[[
+  { 'akinsho/toggleterm.nvim',
+   version = '*',
+   opts = {
+     autochdir = true,
+     direction = 'horizontal',
+     persist_mode = false,
+   },
+  },
+  ]]--
 })
 
 -- Config (n)Vim
@@ -301,6 +308,24 @@ vim.keymap.set('n', '<A-t>',   '<Cmd>BufferPick<CR>',         { silent = true })
 
 -- Config Zig 
 vim.g.zig_fmt_autosave = 0
+
+-- Config ToggleTerm
+--[[
+require('toggleterm').setup()
+vim.keymap.set('n', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { silent = true })
+vim.keymap.set('n', '<C-`>1', '<cmd>1ToggleTerm dir=.<cr>',   { } )
+vim.keymap.set('n', '<C-`>2', '<cmd>2ToggleTerm dir=.<cr>',   { } )
+vim.keymap.set('n', '<C-`>3', '<cmd>3ToggleTerm dir=.<cr>',   { } )
+
+function _G.set_term_keymap()
+  vim.keymap.set('t', '<C-esc>', '<C-\><C-n>', { })
+  vim.keymap.set('t', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { })
+  vim.keymap.set('n', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { })
+  vim.keymap.set('n', '<C-`>1', '<cmd>1ToggleTerm dir=.<cr>',   { } )
+  vim.keymap.set('n', '<C-`>2', '<cmd>2ToggleTerm dir=.<cr>',   { } )
+  vim.keymap.set('n', '<C-`>3', '<cmd>3ToggleTerm dir=.<cr>',   { } )
+end
+]]--
  
 -- Config Telescope
 local telescope = require('telescope.builtin')
