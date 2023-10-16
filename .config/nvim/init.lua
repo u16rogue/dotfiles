@@ -5,6 +5,9 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.g.mapleader      = ' '
+vim.g.maplocalleader = ' '
+
 vim.opt.tabstop        = 2
 vim.opt.softtabstop    = 2
 vim.opt.shiftwidth     = 2
@@ -27,9 +30,26 @@ vim.opt.linebreak      = true
 vim.opt.pumheight      = 10
 vim.opt.relativenumber = true
 
+vim.opt.clipboard      = 'unnamedplus'
+
+-- SUPERIOR SEARCHING
+vim.opt.ignorecase     = true
+vim.opt.smartcase      = true
+-- vim.opt.hlsearch       = false
+
+-- file undo history (MUST HAVE)
+vim.opt.undofile       = true
+
 vim.opt.list           = true
 vim.opt.listchars:append 'space:⋅'
 vim.opt.listchars:append 'eol:↴'
+
+-- Press enter to insert newline
+vim.keymap.set('n', '<cr>', 'o<esc>', { silent = true })
+
+-- Easy align
+vim.keymap.set('x', 'ga', '<plug>(EasyAlign)', { silent = true })
+vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
 
 vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
 vim.api.nvim_create_autocmd('RecordingLeave', { callback = function() vim.o.cmdheight = 0 end })
@@ -59,20 +79,6 @@ lazy.setup({
       { 'nvim-tree/nvim-web-devicons', opt = true },
     },
     opts = {
-      -- Commented defaults
-      -- options = {
-      --   icons_enabled = true,
-      --   theme = 'auto',
-      --   component_separators = { left = '', right = ''},
-      --   section_separators = { left = '', right = ''},
-      --   always_divide_middle = true,
-      --   globalstatus = false,
-      --   refresh = {
-      --     statusline = 1000,
-      --     tabline = 1000,
-      --     winbar = 1000,
-      --   }
-      -- },
       sections = {
         lualine_a = {'mode'},
         lualine_b = {'branch', 'diff', 'diagnostics'},
@@ -123,11 +129,11 @@ lazy.setup({
   -- Tree-sitter
   { 'nvim-treesitter/nvim-treesitter',
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-context',
       -- 'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
   },
+  { 'nvim-treesitter/nvim-treesitter-context', opts = {} },
 
   -- Telescope
   { 'nvim-telescope/telescope.nvim',
@@ -182,7 +188,6 @@ lazy.setup({
         -- This is the horizontal bar
         show_start = false,
         show_end = false,
-
       },
     },
   },
@@ -222,8 +227,16 @@ lazy.setup({
   'leafOfTree/vim-svelte-plugin',
   'ziglang/zig.vim',
   'bfrg/vim-cpp-modern',
+
+  -- Auto pair parentheses
+  { 'windwp/nvim-autopairs', opts = {} },
+  -- Comment plugin
+  { 'numToStr/Comment.nvim', opts = {} },
+  -- Multi-case, regex replace
+  'tpope/vim-abolish',
+  -- Align plugin
+  'junegunn/vim-easy-align',
 })
--- ! Install ripgrep
 
 -- Config (n)Vim
 vim.cmd [[highlight LineNr guifg=#fff]]
@@ -239,10 +252,10 @@ vim.o.updatetime = 250
 -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 -- Config vim-cpp-modern
-vim.g.cpp_function_highlight = 1
+vim.g.cpp_function_highlight   = 1
 vim.g.cpp_attributes_highlight = 1
-vim.g.cpp_member_highlight = 1
-vim.g.cpp_simple_highlight = 1
+vim.g.cpp_member_highlight     = 1
+vim.g.cpp_simple_highlight     = 1
 
 -- Config NvimTree
 vim.g.loaded_netrw = 1
@@ -266,13 +279,13 @@ local hooks = require 'ibl.hooks'
 -- create the highlight groups in the highlight setup hook, so they are reset
 -- every time the colorscheme changes
 hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-    vim.api.nvim_set_hl(0, 'RainbowRed', { fg = '#E06C75' })
+    vim.api.nvim_set_hl(0, 'RainbowRed',    { fg = '#E06C75' })
     vim.api.nvim_set_hl(0, 'RainbowYellow', { fg = '#E5C07B' })
-    vim.api.nvim_set_hl(0, 'RainbowBlue', { fg = '#61AFEF' })
+    vim.api.nvim_set_hl(0, 'RainbowBlue',   { fg = '#61AFEF' })
     vim.api.nvim_set_hl(0, 'RainbowOrange', { fg = '#D19A66' })
-    vim.api.nvim_set_hl(0, 'RainbowGreen', { fg = '#98C379' })
+    vim.api.nvim_set_hl(0, 'RainbowGreen',  { fg = '#98C379' })
     vim.api.nvim_set_hl(0, 'RainbowViolet', { fg = '#C678DD' })
-    vim.api.nvim_set_hl(0, 'RainbowCyan', { fg = '#56B6C2' })
+    vim.api.nvim_set_hl(0, 'RainbowCyan',   { fg = '#56B6C2' })
 end)
 
 require('ibl').setup { indent = { highlight = highlight } }
@@ -312,6 +325,68 @@ vim.keymap.set('n', 'gd',         '<Plug>(coc-definition)',        { silent = tr
 vim.keymap.set('n', 'gy',         '<Plug>(coc-type-definition)',   { silent = true })
 vim.keymap.set('n', 'gi',         '<Plug>(coc-implementation)',    { silent = true })
 vim.keymap.set('n', 'gr',         '<Plug>(coc-references)',        { silent = true })
+
+-- [[ Treesitter ]]
+require('nvim-treesitter.configs').setup {
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim' },
+  auto_install = true,
+
+  highlight = { enable = true },
+  indent = { enable = true },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = '<c-space>',
+      node_incremental = '<c-space>',
+      scope_incremental = '<c-s>',
+      node_decremental = '<M-space>',
+    },
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ['aa'] = '@parameter.outer',
+        ['ia'] = '@parameter.inner',
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        [']m'] = '@function.outer',
+        [']]'] = '@class.outer',
+      },
+      goto_next_end = {
+        [']M'] = '@function.outer',
+        [']['] = '@class.outer',
+      },
+      goto_previous_start = {
+        ['[m'] = '@function.outer',
+        ['[['] = '@class.outer',
+      },
+      goto_previous_end = {
+        ['[M'] = '@function.outer',
+        ['[]'] = '@class.outer',
+      },
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ['<leader>a'] = '@parameter.inner',
+      },
+      swap_previous = {
+        ['<leader>A'] = '@parameter.inner',
+      },
+    },
+  },
+}
 
 -- -- MASON + NVIM LSP --
 -- require('mason').setup() 
