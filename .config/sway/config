@@ -1,0 +1,159 @@
+# Init
+exec --no-startup-id pipewire
+exec --no-startup-id wireplumber
+exec --no-startup-id pipewire-pulse
+
+# [17-01-2024] See bindsym, Use mod+Pause/ScrollLock to toggle instead
+#exec swayidle \
+#  timeout 180 'swaymsg "output * dpms off"' \
+#  resume 'swaymsg "output * dpms on"'
+
+# Vars
+set $mod Mod4
+set $floating_mod $mod
+
+set $up w
+set $down s
+set $left a
+set $right d
+
+set $term alacritty
+set $menu fuzzel
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Opts
+font pango:Comfortaa SemiBold 10
+
+xwayland enable
+workspace_layout default
+smart_borders off
+titlebar_padding 1 1
+focus_follows_mouse no
+focus_on_window_activation none
+focus_wrapping workspace
+title_align center
+#default_border pixel 2px
+
+gaps {
+  outer 2px
+  inner 2px
+}
+
+client.focused   #222222 #222222 #ffffff #222222 #222222
+client.unfocused #555555 #555555 #ffffff #555555 #555555
+
+# Display Output
+include "output.sway"
+#output * bg /home/user/Media/Wallpapers/bg.jpg fill
+#output * bg /home/user/Media/Wallpapers/nanahira_Fq22B7FaEAEBlFr_dim.jpg fill
+
+bar {
+  id 0
+  mode dock
+  height 18px
+  position top
+  # status_command while date +'%d-%m-%Y %H:%M:%S '; do sleep 1; done
+  status_command while date +'%d-%m-%Y %H:%M '; do sleep 30; done
+
+  colors {
+    statusline #ffffff
+    background #00000033
+    binding_mode #00000066 #00000066 #FFFFFF
+    focused_workspace  #00000077 #00000077 #FFFFFF
+    active_workspace #00000033 #00000033 #FFFFFF
+    inactive_workspace #00000033 #00000033 #FFFFFF
+  }
+}
+
+bindsym {
+  # Tile Movement
+  $mod+$left        focus left
+  $mod+$down        focus down
+  $mod+$up          focus up
+  $mod+$right       focus right
+  $mod+Shift+$left  move  left
+  $mod+Shift+$down  move  down
+  $mod+Shift+$up    move  up
+  $mod+Shift+$right move  right
+
+  # Tile Management
+  $mod+Shift+q kill
+  $mod+Shift+r reload
+  $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
+  $mod+f fullscreen
+  $mod+Shift+space floating toggle
+  $mod+space focus mode_toggle
+  $mod+Tab layout tabbed
+  $mod+b splith
+  $mod+v splitv
+
+  # Applications
+  $mod+Shift+grave exec $term
+  Control+Print exec "flatpak run org.flameshot.Flameshot gui --path /tmp/ --raw | wl-copy"
+  #Print exec ~/Scripts/xcbflameshotfull.sh
+  $mod+grave exec fuzzel
+
+  # Workspace Binds
+  $mod+1 workspace number $ws1
+  $mod+2 workspace number $ws2
+  $mod+3 workspace number $ws3
+  $mod+4 workspace number $ws4
+  $mod+5 workspace number $ws5
+  $mod+6 workspace number $ws6
+  $mod+7 workspace number $ws7
+  $mod+8 workspace number $ws8
+  $mod+9 workspace number $ws9
+  $mod+0 workspace number $ws10
+  $mod+Shift+1 move container to workspace number $ws1
+  $mod+Shift+2 move container to workspace number $ws2
+  $mod+Shift+3 move container to workspace number $ws3
+  $mod+Shift+4 move container to workspace number $ws4
+  $mod+Shift+5 move container to workspace number $ws5
+  $mod+Shift+6 move container to workspace number $ws6
+  $mod+Shift+7 move container to workspace number $ws7
+  $mod+Shift+8 move container to workspace number $ws8
+  $mod+Shift+9 move container to workspace number $ws9
+  $mod+Shift+0 move container to workspace number $ws10
+
+  # Modes
+  $mod+r mode "resize"
+
+  # Peri
+  XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1% && $refresh_i3status
+  XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1% && $refresh_i3status
+  XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+  XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+  $mod+l exec swaylock -f -c 000000
+  --locked $mod+Pause exec /home/user/Scripts/toggledpms.sh
+}
+
+mode "resize" {
+  bindsym $left resize shrink width 10px
+  bindsym $down resize grow height 10px
+  bindsym $up resize shrink height 10px
+  bindsym $right resize grow width 10px
+
+  bindsym Left resize shrink width 1px
+  bindsym Down resize grow height 1px
+  bindsym Up resize shrink height 1px
+  bindsym Right resize grow width 1px
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+# flameshot on wayland fix https://github.com/flameshot-org/flameshot/issues/3461
+for_window [title="flameshot" app_id="flameshot"] fullscreen enable global
+
+include /etc/sway/config.d/*

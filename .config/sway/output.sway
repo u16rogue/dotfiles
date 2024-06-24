@@ -1,0 +1,12 @@
+output DP-1 {
+  mode 1920x1080@165Hz
+  pos 1440 0
+  bg /home/user/Media/Wallpapers/nanahira_Fq22B7FaEAEBlFr_dim.jpg fill
+}
+
+output HDMI-A-1 {
+  mode 1440x900@59.887Hz
+  pos 0 0
+  bg /home/user/Media/Wallpapers/nanahira_Fq22B7FaEAEBlFr_dim.jpg fill
+  # bg /home/user/Media/Wallpapers/nanahira_media_F_jGK3JaoAAH36c.jpg fill
+}
