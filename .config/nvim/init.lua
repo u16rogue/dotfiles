@@ -108,27 +108,10 @@ lazy.setup({
       'nvim-tree/nvim-web-devicons',
     },
     opts = {
-      renderer = {
-        group_empty = true,
-        indent_width = 2,
-        indent_markers = {
-          enable = true,
-          inline_arrows = false,
-        },
-      }, 
-      git = {
-        ignore = false, 
-      },
-      view = {
-        number = true,
-        float = {
-          enable = true,
-          open_win_config = {
-            width = 80,
-            height = 100,
-          },
-        },
-      },
+      renderer = { group_empty = true, indent_width = 2, indent_markers = { enable = true, inline_arrows = false } }, 
+      git = { ignore = false },
+      view = { number = true, float = { enable = true, open_win_config = { width = 80, height = 100 } } },
+      filters = { dotfiles = true },
     },
   },
 
@@ -138,8 +121,16 @@ lazy.setup({
   },
   { 'nvim-treesitter/nvim-treesitter-context', opts = {} },
 
+  -- Scope Highlighter
+  { 'HiPhish/rainbow-delimiters.nvim',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
+  },
+
   -- Telescope
   { 'nvim-telescope/telescope.nvim',
+    tag = '0.1.8',
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -224,29 +215,23 @@ lazy.setup({
   'leafOfTree/vim-svelte-plugin',
   'ziglang/zig.vim',
   'bfrg/vim-cpp-modern',
- 
+
   -- Multi-case, regex replace
   'tpope/vim-abolish',
 
   -- Align plugin
   'junegunn/vim-easy-align',
 
-  -- Comment plugin // having issues
-  -- { 'numToStr/Comment.nvim', opts = {} },
-
-  -- Auto pair parentheses // still applies when there's already an end delimeter
-  -- { 'windwp/nvim-autopairs', opts = {} },
-  
-  --[[
-  { 'akinsho/toggleterm.nvim',
-    version = '*',
-    opts = {
-      autochdir = true,
-      direction = 'horizontal',
-      persist_mode = false,
-    },
+  -- Scope splitter / joiner
+  {
+    'Wansmer/treesj',
+    keys = { '<space>m', '<space>j', '<space>s' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('treesj').setup({--[[ your config ]]})
+    end,
   },
-  ]]--
+
 })
 
 -- Config (n)Vim
@@ -324,24 +309,6 @@ vim.keymap.set('n', '<A-t>',   '<Cmd>BufferPick<CR>',         { silent = true })
 -- Config Zig 
 vim.g.zig_fmt_autosave = 0
 
--- Config ToggleTerm
---[[
-require('toggleterm').setup()
-vim.keymap.set('n', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { silent = true })
-vim.keymap.set('n', '<C-`>1', '<cmd>1ToggleTerm dir=.<cr>',   { } )
-vim.keymap.set('n', '<C-`>2', '<cmd>2ToggleTerm dir=.<cr>',   { } )
-vim.keymap.set('n', '<C-`>3', '<cmd>3ToggleTerm dir=.<cr>',   { } )
-
-function _G.set_term_keymap()
-  vim.keymap.set('t', '<C-esc>', '<C-\><C-n>', { })
-  vim.keymap.set('t', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { })
-  vim.keymap.set('n', '<C-`>`', '<cmd>ToggleTermToggleAll<cr>', { })
-  vim.keymap.set('n', '<C-`>1', '<cmd>1ToggleTerm dir=.<cr>',   { } )
-  vim.keymap.set('n', '<C-`>2', '<cmd>2ToggleTerm dir=.<cr>',   { } )
-  vim.keymap.set('n', '<C-`>3', '<cmd>3ToggleTerm dir=.<cr>',   { } )
-end
-]]--
- 
 -- Config Telescope
 local telescope = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', function() telescope.find_files() end)
@@ -504,6 +471,51 @@ local nvim_cmp_lsp = require('cmp_nvim_lsp')
 local capabilities = nvim_cmp_lsp.default_capabilities()
 local lc = require('lspconfig')
 
+require("clangd_extensions").setup({
+  inlay_hints = {
+    inline = vim.fn.has("nvim-0.10") == 1,
+    only_current_line = false,
+    only_current_line_autocmd = { "CursorHold" },
+    show_parameter_hints = true,
+    parameter_hints_prefix = "<- ",
+    other_hints_prefix = "=> ",
+    max_len_align = false,
+    max_len_align_padding = 1,
+    right_align = true,
+    right_align_padding = 7,
+    highlight = "Comment",
+    priority = 100,
+  },
+  ast = {
+    role_icons = {
+      type = "🄣",
+      declaration = "🄓",
+      expression = "🄔",
+      statement = ";",
+      specifier = "🄢",
+      ["template argument"] = "🆃",
+    },
+    kind_icons = {
+      Compound = "🄲",
+      Recovery = "🅁",
+      TranslationUnit = "🅄",
+      PackExpansion = "🄿",
+      TemplateTypeParm = "🅃",
+      TemplateTemplateParm = "🅃",
+      TemplateParamObject = "🅃",
+    },
+    highlights = {
+      detail = "Comment",
+    },
+  },
+  memory_usage = {
+    border = "none",
+  },
+  symbol_info = {
+    border = "none",
+  },
+})
+
 lc['clangd'].setup {
   capabilities = capabilities,
   settings = {
@@ -512,8 +524,9 @@ lc['clangd'].setup {
     },
   },
   on_attach = function(c)
-    require("clangd_extensions.inlay_hints").setup_autocmd()
-    require("clangd_extensions.inlay_hints").set_inlay_hints()
+    ceih = require("clangd_extensions.inlay_hints")
+    ceih.setup_autocmd()
+    ceih.set_inlay_hints()
   end,
 }
 
@@ -639,6 +652,7 @@ dap.configurations.cpp = {
     stopOnEntry = false,
   },
 }
+dap.configurations.c = dap.configurations.cpp
 
 vim.keymap.set('n', '<leader><F2>',  function() dap.toggle_breakpoint() end)
 vim.keymap.set('n', '<leader><F6>',  function() dap.step_into() end)

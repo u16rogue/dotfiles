@@ -27,3 +27,5 @@ function fish_prompt
       (set_color magenta)  $git_prompt \
       (set_color normal) $user_char
 end
+
+abbr --add nvims nvim -S .nvimsession

@@ -31,6 +31,9 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+set $d_main DP-1
+set $d_left_of_main HDMI-A-1
+
 # Opts
 font pango:Comfortaa SemiBold 10
 
