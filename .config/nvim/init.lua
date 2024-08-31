@@ -48,10 +48,6 @@ vim.opt.listchars:append 'eol:↴'
 -- Press enter to insert newline
 vim.keymap.set('n', '<cr>', 'o<esc>', { silent = true })
 
--- Easy align
-vim.keymap.set('x', '<leader>a', '<plug>(EasyAlign)', { silent = true })
---vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
-
 vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
 vim.api.nvim_create_autocmd('RecordingLeave', { callback = function() vim.o.cmdheight = 0 end })
 
@@ -111,7 +107,7 @@ lazy.setup({
       renderer = { group_empty = true, indent_width = 2, indent_markers = { enable = true, inline_arrows = false } }, 
       git = { ignore = false },
       view = { number = true, float = { enable = true, open_win_config = { width = 80, height = 100 } } },
-      filters = { dotfiles = true },
+      filters = { dotfiles = false },
     },
   },
 
@@ -225,10 +221,10 @@ lazy.setup({
   -- Scope splitter / joiner
   {
     'Wansmer/treesj',
-    keys = { '<space>m', '<space>j', '<space>s' },
+    -- keys = { '<space>m', '<space>j', '<space>s' },
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     config = function()
-      require('treesj').setup({--[[ your config ]]})
+      require('treesj').setup({ use_default_keymaps = false })
     end,
   },
 
@@ -236,6 +232,14 @@ lazy.setup({
 
 -- Config (n)Vim
 vim.cmd [[highlight LineNr guifg=#fff]]
+
+-- Easy align
+vim.keymap.set('x', '<leader>aa', '<plug>(EasyAlign)', { silent = true }) -- align align
+--vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
+
+-- Scope split
+vim.keymap.set('n', '<leader>as', '<Cmd>TSJToggle<CR>', { silent = true }) -- align scope
+
 
 vim.diagnostic.config({
   -- virtual_text = false,

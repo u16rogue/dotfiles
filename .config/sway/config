@@ -45,7 +45,7 @@ focus_follows_mouse no
 focus_on_window_activation none
 focus_wrapping workspace
 title_align center
-#default_border pixel 2px
+default_border pixel 2
 
 gaps {
   outer 2px
@@ -62,10 +62,33 @@ include "output.sway"
 
 bar {
   id 0
-  mode dock
+  mode hide
+  modifier $mod
+  output $d_main
+  hidden_state hide
   height 18px
   position top
-  # status_command while date +'%d-%m-%Y %H:%M:%S '; do sleep 1; done
+  # status_command swaymsg -t subscribe -m '["window"]' | jq -r '.container.name'
+  # status_command while date +'%d-%m-%Y %H:%M '; do sleep 30; done
+  tray_output $d_left_of_main
+
+  colors {
+    statusline #ffffff
+    background #00000033
+    binding_mode #00000066 #00000066 #FFFFFF
+    focused_workspace  #00000077 #00000077 #FFFFFF
+    active_workspace #00000033 #00000033 #FFFFFF
+    inactive_workspace #00000033 #00000033 #FFFFFF
+  }
+}
+
+bar {
+  id 1
+  mode dock
+  modifier $mod
+  output $d_left_of_main
+  height 18px
+  position top
   status_command while date +'%d-%m-%Y %H:%M '; do sleep 30; done
 
   colors {
@@ -77,6 +100,24 @@ bar {
     inactive_workspace #00000033 #00000033 #FFFFFF
   }
 }
+
+#bar {
+#  id 1
+#  mode dock
+#  height 18px
+#  position bottom
+#  # status_command while date +'%d-%m-%Y %H:%M:%S '; do sleep 1; done
+#  status_command while date +'%d-%m-%Y %H:%M '; do sleep 30; done
+#
+#  colors {
+#    statusline #ffffff
+#    background #00000033
+#    binding_mode #00000066 #00000066 #FFFFFF
+#    focused_workspace  #00000077 #00000077 #FFFFFF
+#    active_workspace #00000033 #00000033 #FFFFFF
+#    inactive_workspace #00000033 #00000033 #FFFFFF
+#  }
+#}
 
 bindsym {
   # Tile Movement
