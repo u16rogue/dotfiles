@@ -17,6 +17,7 @@ vim.opt.autoindent     = true
 vim.opt.copyindent     = true
 
 vim.opt.cmdheight      = 0
+vim.o.laststatus       = 3 -- keep status line at the bottom
 vim.opt.showmode       = false
 vim.opt.signcolumn     = 'yes'
 vim.wo.wrap            = false
