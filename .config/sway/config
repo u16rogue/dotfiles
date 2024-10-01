@@ -46,10 +46,12 @@ focus_on_window_activation none
 focus_wrapping workspace
 title_align center
 default_border pixel 2
+#workspace_auto_back_and_forth yes
+input type:keyboard xkb_numlock enabled
 
 gaps {
-  outer 2px
-  inner 2px
+  outer 0px
+  inner 0px
 }
 
 client.focused   #222222 #222222 #ffffff #222222 #222222
@@ -169,6 +171,10 @@ bindsym {
   $mod+Shift+9 move container to workspace number $ws9
   $mod+Shift+0 move container to workspace number $ws10
 
+  XF86AudioPlay workspace number $ws10
+  XF86AudioPrev workspace number $ws9 
+  #XF86AudioPrev workspace back_and_forth
+
   # Modes
   $mod+r mode "resize"
 
@@ -199,5 +205,6 @@ mode "resize" {
 
 # flameshot on wayland fix https://github.com/flameshot-org/flameshot/issues/3461
 for_window [title="flameshot" app_id="flameshot"] fullscreen enable global
+for_window [class="Pinentry-gtk"] floating enable
 
 include /etc/sway/config.d/*

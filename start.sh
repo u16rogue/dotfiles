@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export CPM_SOURCE_CACHE=~/.cmakepackman
+export IDF_TOOLS_PATH="~/Packages/esp-idf/.espressif"
 
 export TERM=alacritty
 export EDITOR=vim
