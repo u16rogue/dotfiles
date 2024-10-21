@@ -7,11 +7,9 @@ output $d_main {
 workspace {
   $ws1 output $d_main
   $ws3 output $d_main
-  #$ws5 output $d_main
-  #$ws7 output $d_main
 
+  $ws8 output $d_main
   $ws9 output $d_main
-  $ws0 output $d_main
 }
 
 #-------------------------------------------------------------------------------
@@ -26,7 +24,4 @@ output $d_left_of_main {
 workspace {
   $ws2 output $d_left_of_main
   $ws4 output $d_left_of_main
-  #$ws6 output $d_left_of_main
-  #$ws8 output $d_left_of_main
-  #$ws0 output $d_left_of_main
 }
