@@ -13,20 +13,18 @@ vim.opt.softtabstop    = 2
 vim.opt.shiftwidth     = 2
 vim.opt.expandtab      = true
 
-vim.opt.autoindent     = true
-vim.opt.copyindent     = true
+--vim.opt.autoindent     = true
+--vim.opt.copyindent     = true
 
 vim.opt.cmdheight      = 0
 vim.o.laststatus       = 3 -- keep status line at the bottom
 vim.opt.showmode       = false
 vim.opt.signcolumn     = 'yes'
-vim.wo.wrap            = false
-
+vim.wo.wrap            = true
 vim.opt.number         = true
 vim.opt.showcmd        = true
 vim.opt.wildmenu       = true
 vim.opt.showmatch      = true
-
 vim.opt.termguicolors  = true
 vim.opt.linebreak      = true
 vim.opt.pumheight      = 10
@@ -34,17 +32,19 @@ vim.opt.relativenumber = true
 
 vim.opt.clipboard      = 'unnamedplus'
 
--- SUPERIOR SEARCHING
 vim.opt.ignorecase     = true
 vim.opt.smartcase      = true
 -- vim.opt.hlsearch       = false
 
--- file undo history (MUST HAVE)
+-- file undo history
 vim.opt.undofile       = true
 
+-- whitespace visualization
 vim.opt.list           = true
 vim.opt.listchars:append 'space:⋅'
 vim.opt.listchars:append 'eol:↴'
+vim.o.pumblend = 0
+vim.o.winblend = 0
 
 -- Press enter to insert newline
 vim.keymap.set('n', '<cr>', 'o<esc>', { silent = true })
@@ -62,10 +62,10 @@ lazy.setup({
     opts = {},
     config = function()
       require('catppuccin').setup({
-        transparent_background = false,
+        --transparent_background = true,
         flavour = 'mocha',
         styles = {
-          comments = {},
+          --comments = {},
         },
       })
       vim.cmd.colorscheme 'catppuccin'
@@ -442,6 +442,10 @@ cmp.setup({
     debounce = 250,
     max_view_entries = 10,
   },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  }
 })
 
 -- Set configuration for specific filetype.
