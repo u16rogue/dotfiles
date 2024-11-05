@@ -1,6 +1,3 @@
-import = [
-  "~/.config/alacritty/catppuccin-mocha.toml"
-]
 
 [window]
 opacity = 0.9
@@ -14,5 +11,10 @@ TERM = "xterm-256color"
 [font]
 normal = { family = "CaskaydiaCove Nerd Font", style = "SemiBold" }
 size = 10
+
+[general]
+import = [
+  "~/.config/alacritty/catppuccin-mocha.toml"
+]
 #normal = { family = "ComicMono Nerd Font", style = "Bold" }
 #size = 11

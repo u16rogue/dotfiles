@@ -29,3 +29,4 @@ function fish_prompt
 end
 
 abbr --add nvims nvim -S .nvimsession
+set fish_autosuggestion_enabled 0

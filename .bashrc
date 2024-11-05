@@ -12,3 +12,4 @@ PS1='[\u@\h \W]\$ '
 export GPG_TTY=$(tty)
 
 exec fish
+
