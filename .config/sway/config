@@ -1,7 +1,4 @@
 # Init
-exec --no-startup-id pipewire
-exec --no-startup-id wireplumber
-exec --no-startup-id pipewire-pulse
 
 # [17-01-2024] See bindsym, Use mod+Pause/ScrollLock to toggle instead
 #exec swayidle \
@@ -54,7 +51,7 @@ gaps {
   inner 0px
 }
 
-client.focused   #222222 #222222 #ffffff #222222 #222222
+client.focused   #222222 #222222 #ffffff #222222 #c39fa1
 client.unfocused #555555 #555555 #ffffff #555555 #555555
 
 # Display Output
@@ -204,8 +201,12 @@ mode "resize" {
 }
 
 # flameshot on wayland fix https://github.com/flameshot-org/flameshot/issues/3461
+#for_window [title="flameshot" app_id="flameshot"] fullscreen enable global, move absolute position 1440 0
 for_window [title="flameshot" app_id="flameshot"] fullscreen enable global
 for_window [class="Pinentry-gtk"] floating enable
+for_window [title="Picture-in-Picture"] floating enable
+
+assign [app_id="com.moonlight_stream.Moonlight"] $ws9
 
 # disposable headless
 set $d_headless1 HEADLESS-1
@@ -215,5 +216,7 @@ workspace {
 bindsym {
   XF86AudioNext workspace number $ws10
 }
+
+# middle click paste
 
 include /etc/sway/config.d/*

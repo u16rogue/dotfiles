@@ -572,7 +572,7 @@ lc['svelte'].setup {
   end,
 }
 
-lc['tsserver'].setup {
+lc['ts_ls'].setup {
   capabilities = capabilities
 }
 

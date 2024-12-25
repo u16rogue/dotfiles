@@ -9,12 +9,13 @@ dynamic_padding = true
 TERM = "xterm-256color"
 
 [font]
-normal = { family = "CaskaydiaCove Nerd Font", style = "SemiBold" }
-size = 10
+#normal = { family = "CaskaydiaCove Nerd Font", style = "SemiBold" }
+#size = 10
+normal = { family = "ComicMono Nerd Font", style = "Bold" }
+size = 10.4
 
 [general]
 import = [
   "~/.config/alacritty/catppuccin-mocha.toml"
 ]
-#normal = { family = "ComicMono Nerd Font", style = "Bold" }
-#size = 11
+
