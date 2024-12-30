@@ -1,0 +1,9 @@
+background-opacity = 0.90
+window-decoration = false
+auto-update = off
+font-family = ComicMono Nerd Font
+theme = catpuccin-mocha.conf
+font-size = 10.5
+font-thicken = true
+#adjust-cell-width = 8%
+#adjust-cell-height = 10%
