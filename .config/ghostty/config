@@ -1,0 +1,14 @@
+background-opacity = 0.90
+window-decoration = false
+auto-update = off
+font-family = ComicMono Nerd Font
+font-style = true
+font-style-bold = true
+theme = catpuccin-mocha.conf
+font-size = 10.4
+cursor-style = block
+cursor-style-blink = false
+#adjust-cell-width = 2%
+#adjust-cell-height = 2%
+#shell-integration = fish
+#initial-command = tmux

@@ -1,0 +1,11 @@
+**
+.*
+!.gitignore
+!alacritty/
+!fish/
+!fuzzel/
+!ghostty/
+!kitty/
+!nvim/
+!sway/
+!tmux/

@@ -1,0 +1,7 @@
+**
+.*
+!.gitignore
+!mkignore
+!moonlight-obsvkcap.sh
+!tmux-ss
+!toggledpms.sh

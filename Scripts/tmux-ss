@@ -1,0 +1,39 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  echo "Missing directory. Usage: $0 <directory>"
+  exit 1
+fi
+
+DEV_DIR=$(realpath "$1")
+if [ ! -d "$DEV_DIR" ]; then
+  echo "Invalid directory. Not found: $DEV_DIR"
+  exit 1
+fi
+
+SESSION=$(basename "$1")
+
+# Session
+tmux new-session -d -s $SESSION -A
+
+# Main window 1 :: Setup
+if [ -f "$DEV_DIR/.nvimsession" ]; then
+  tmux send-keys -t $SESSION "cd $DEV_DIR;nvim -S .nvimsession;clear" C-m
+else
+  tmux send-keys -t $SESSION "cd $DEV_DIR;nvim;clear" C-m
+fi
+
+tmux split-pane -t $SESSION
+tmux send-keys -t $SESSION "cd $DEV_DIR;clear" C-m
+# Main window 1 :: Maximize editor
+tmux select-pane -t $SESSION.+1
+tmux resize-pane -Z -t $SESSION
+
+# Sub window 2 :: Setup
+tmux new-window -t $SESSION
+tmux send-keys -t $SESSION "cd $DEV_DIR;clear" C-m
+
+tmux split-pane -t $SESSION
+tmux send-keys -t $SESSION "cd $DEV_DIR;clear" C-m
+
+tmux select-window -t $SESSION:1
