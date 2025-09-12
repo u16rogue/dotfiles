@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source .setup_private_env.sh
+#source .setup_private_env.sh
 
 export CPM_SOURCE_CACHE=$(realpath ".cache/cmake-cpm")
 export IDF_TOOLS_PATH=$(realpath "Packages/esp-idf/.espressif")
