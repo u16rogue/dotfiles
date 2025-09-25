@@ -1,8 +1,5 @@
 if not functions -q fundle; eval (curl -sfL https://git.io/fundle-install); end
-
-# -- Fundle plugins
 fundle plugin 'danhper/fish-ssh-agent'
-
 fundle init
 
 if status is-interactive
@@ -24,7 +21,7 @@ function fish_prompt
       (set_color normal)                    \
       (set_color brblue) $hostname          \
       (set_color bryellow) (pwd)            \
-      (set_color magenta)  $git_prompt \
+      (set_color magenta)  $git_prompt      \
       (set_color normal) $user_char
 end
 

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+check_program_installed() {
+    command -v "$1" >/dev/null 2>&1 || error_exit "$1 is not installed. Please install it."
+}
+
+get_container_name() {
+    basename="$(basename "$PWD")"
+    echo "user-container-${basename}"
+}
+
+image_exists() {
+    podman image exists localhost/user-container
+}
+
+container_exists() {
+    podman container exists "$(get_container_name)"
+}
+
+case "$1" in
+    start)
+        check_program_installed "podman"
+        image_exists || error_exit "Podman image 'localhost/user-container' does not exist."
+
+        container_name="$(get_container_name)"
+        guest_mounted_dir="/home/user-container/$(basename "$PWD")"
+
+        if container_exists; then
+            podman container start "$container_name" || error_exit "Failed to start container."
+            podman exec -it "$container_name" tmux attach || podman exec -it "$container_name" tmux new
+        else
+            podman run -it --name "$container_name" \
+                --network=host \
+                -v "$PWD":"$guest_mounted_dir" \
+                localhost/user-container \
+                new -s "${container_name}-default"
+        fi
+        ;;
+    remove)
+        container_name="$(get_container_name)"
+        if container_exists; then
+            podman container rm -f "$container_name" || error_exit "Failed to remove container."
+        else
+            echo "Container $container_name does not exist."
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|remove}"
+        exit 1
+        ;;
+esac

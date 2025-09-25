@@ -5,3 +5,8 @@
 !moonlight-obsvkcap.sh
 !tmux-ss
 !toggledpms.sh
+
+!user-container.containerfile
+!user-container
+!.github/
+!.github/**
