@@ -24,7 +24,6 @@ container_exists() {
 
 case "$1" in
     start)
-        check_program_installed "podman"
         image_exists || error_exit "Podman image 'localhost/user-container' does not exist."
 
         container_name="$(get_container_name)"
@@ -35,11 +34,23 @@ case "$1" in
             podman exec -it "$container_name" tmux attach || podman exec -it "$container_name" tmux new
         else
             podman run -it --name "$container_name" \
+                --user $(id -u):$(id -g) \
+                --hostname $container_name \
                 --network=host \
-                -v "$PWD":"$guest_mounted_dir" \
+                -v "$PWD":"$guest_mounted_dir":rw \
                 localhost/user-container \
-                new -s "${container_name}-default"
+                new -s container-default
         fi
+        ;;
+    sandbox)
+        image_exists || error_exit "Podman image 'localhost/user-container' does not exist."
+        podman run -it --name sandbox \
+            --rm \
+            --user $(id -u):$(id -g) \
+            --hostname sandbox \
+            --network=host \
+            localhost/user-container \
+            new -s sandbox-default
         ;;
     remove)
         container_name="$(get_container_name)"
@@ -49,8 +60,17 @@ case "$1" in
             echo "Container $container_name does not exist."
         fi
         ;;
-    *)
-        echo "Usage: $0 {start|remove}"
+    build)
+            SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+            podman build \
+                --build-arg HOST_UID=$(id -u) \
+                --build-arg HOST_GID=$(id -g) \
+                -f "$SCRIPT_DIR/user-container.containerfile" \
+                -t localhost/user-container \
+                $SCRIPT_DIR
+            ;;
+        *)
+        echo "Usage: $0 [start|sandbox|remove|build]"
         exit 1
         ;;
 esac

@@ -1,14 +1,21 @@
-FROM alpine AS setup
-
-# Setup
-RUN apk add --no-cache tmux fish bash git curl openssh
-
-# Setup system
+#---------------------------------------------------------------------------------------------------
+FROM alpine AS base
+#---------------------------------------------------------------------------------------------------
+ARG HOST_UID=1000
+ARG HOST_GID=1000
 WORKDIR /home/user-container
-RUN \
-    adduser -D -s /bin/sh user-container
+RUN apk add --no-cache tmux fish bash git curl openssh sudo                   \
+ && addgroup -g $HOST_GID user-container                                      \
+ && adduser -D -u $HOST_UID -G user-container -s /usr/bin/fish user-container \
+ && echo "user-container:1234" | chpasswd                                     \
+ && echo 'user-container ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers             \
+ && mkdir -p /home/user-container/.ssh                                         
 
-# Setup tmux config
+#---------------------------------------------------------------------------------------------------
+FROM base AS setup
+#---------------------------------------------------------------------------------------------------
+
+# tmux
 RUN \
     mkdir -p /home/user-container/.config/tmux/ \
  && cat <<'EOF' > /home/user-container/.config/tmux/tmux.conf
@@ -43,7 +50,7 @@ set -g @plugin 'tmux-plugins/tpm'
 run "/home/user-container/.config/tmux/plugins/tpm/tpm"
 EOF
 
-# Setup fish config
+# fish
 RUN \
     mkdir -p /home/user-container/.config/fish \
  && cat <<'EOF' > /home/user-container/.config/fish/config.fish
@@ -75,23 +82,21 @@ EOF
 
 RUN                                                                                                       \
     git clone --depth 1 https://github.com/tmux-plugins/tpm /home/user-container/.config/tmux/plugins/tpm \
- && mkdir -p /home/user-container/.ssh                                                                    \
  && chown -R user-container:user-container /home/user-container                                           \
- && su - user-container -c "/home/user-container/.config/tmux/plugins/tpm/bin/install_plugins"            \
- && su - user-container -c "fish -c 'eval (curl -sfL https://git.io/fundle-install) && fundle plugin danhper/fish-ssh-agent && fundle install && fundle init'"
+ && su - user-container -c "echo Default terminal should now be fish and by executing this command it should auto init fundle using the config" \
+ && su - user-container -c "/home/user-container/.config/tmux/plugins/tpm/bin/install_plugins"
 
-FROM alpine
+# Old fish initializer
+# && su - user-container -c "fish -c 'eval (curl -sfL https://git.io/fundle-install) && fundle plugin danhper/fish-ssh-agent && fundle install && fundle init'" \
+
+#---------------------------------------------------------------------------------------------------
+FROM base
+#---------------------------------------------------------------------------------------------------
 
 COPY --from=setup /home/user-container /home/user-container
 
-RUN                                                                          \
-    apk add --no-cache tmux fish bash git vim sudo openssh musl-locales curl \
- && adduser -D -s /usr/bin/fish user-container                               \
- && echo "user-container:1234" | chpasswd                                    \
- && addgroup user-container wheel                                            \
- && echo "%wheel ALL=(ALL) ALL" > /etc/sudoers.d/wheel                       \
- && mkdir -p /home/user-container/.ssh                                       \
- && chown -R user-container:user-container /home/user-container
+RUN apk add --no-cache vim musl-locales \
+ && chown -R $HOST_UID:$HOST_GID /home/user-container
 
 ENV                   \
   LANG=en_US.UTF-8    \

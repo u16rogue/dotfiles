@@ -7,6 +7,4 @@
 !toggledpms.sh
 
 !user-container.containerfile
-!user-container
-!.github/
-!.github/**
+!usrcontainer
