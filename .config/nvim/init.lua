@@ -245,31 +245,31 @@ require('lazy').setup({
 
     -- Git signs
     { 'lewis6991/gitsigns.nvim',
-      opts = {
-        signs = {
-          add = { text = '+' },
-          change = { text = '~' },
-          delete = { text = '_' },
-          topdelete = { text = '‾' },
-          changedelete = { text = '~' },
-        },
-        on_attach = function(bufnr)
-          local gs = require('gitsigns')
-          vim.keymap.set('n', '<leader>hp', gs.preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+        opts = {
+            signs = {
+                add = { text = '+' },
+                change = { text = '~' },
+                delete = { text = '_' },
+                topdelete = { text = '‾' },
+                changedelete = { text = '~' },
+            },
+            on_attach = function(bufnr)
+                local gs = require('gitsigns')
+                vim.keymap.set('n', '<leader>hp', gs.preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
 
-          -- don't override the built-in and vim-fugitive keymaps
-          vim.keymap.set({'n', 'v'}, ']c', function()
-            if vim.wo.diff then return ']c' end
-            vim.schedule(function() gs.next_hunk() end)
-            return '<Ignore>'
-          end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-          vim.keymap.set({'n', 'v'}, '[c', function()
-            if vim.wo.diff then return '[c' end
-            vim.schedule(function() gs.prev_hunk() end)
-            return '<Ignore>'
-          end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
-        end,
-      },
+                -- don't override the built-in and vim-fugitive keymaps
+                vim.keymap.set({'n', 'v'}, ']c', function()
+                    if vim.wo.diff then return ']c' end
+                    vim.schedule(function() gs.next_hunk() end)
+                    return '<Ignore>'
+                end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
+                vim.keymap.set({'n', 'v'}, '[c', function()
+                    if vim.wo.diff then return '[c' end
+                    vim.schedule(function() gs.prev_hunk() end)
+                    return '<Ignore>'
+                end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+            end,
+        },
     },
 
     -- Indentation visuals
@@ -333,69 +333,11 @@ require('lazy').setup({
             local capabilities = nvim_cmp_lsp.default_capabilities()
             local lc = require('lspconfig')
 
-            --lc['clangd'].setup {
-            --  capabilities = capabilities,
-            --  settings = {
-            --    clangd = {
-            --      semanticHighlighting = true,
-            --    },
-            --  },
-            --  on_attach = function(c)
-            --    --ceih = require("clangd_extensions.inlay_hints")
-            --    --ceih.setup_autocmd()
-            --    --ceih.set_inlay_hints()
-            --  end,
-            --}
-            --
-            --lc['zls'].setup {
-            --  capabilities = capabilities,
-            --  settings = {
-            --  },
-            --  on_attach = function(c)
-            --  end,
-            --}
-            --
-            ---- require('clangd_extensions').prepare({
-            ---- })
-            --
-            --lc['svelte'].setup {
-            --  capabilities = capabilities,
-            --  settings = {
-            --    svelte = {
-            --      plugin = {
-            --        html = {
-            --          completions = { enable = true }
-            --        },
-            --      },
-            --      ['enable-ts-plugin'] = true,
-            --    },
-            --  },
-            --  on_attach = function(client)
-            --    vim.api.nvim_create_autocmd('BufWritePost', {
-            --      pattern = { '*.js', '*.ts' },
-            --      callback = function(ctx)
-            --        client.notify('$/onDidChangeTsOrJsFile', { uri = ctx.file })
-            --      end,
-            --    })
-            --  end,
-            --}
-            --
-            --lc['ts_ls'].setup {
-            --  capabilities = capabilities
-            --}
-            --
-            --lc['emmet_language_server'].setup {
-            --  capabilities = capabilities,
-            --  filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue' }, -- removed svelte since svelte has its own
-            --}
-
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('UserLspConfig', {}),
                 callback = function(ev)
-                    -- Enable completion triggered by <c-x><c-o>
                     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-                    -- Buffer local mappings.
                     -- See `:help vim.lsp.*` for documentation on any of the below functions
                     local opts = { buffer = ev.buf }
 
@@ -416,12 +358,6 @@ require('lazy').setup({
                     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
                 end,
             })
-
-            -- local updated_capabilities = vim.lsp.protocol.make_client_capabilities()
-            -- updated_capabilities.workspace.didChangeWatchedFiles = {
-            --   dynamicRegistration = true,
-            --   relativePatternSupport = true,
-            -- }
         end,
     },
 
@@ -518,8 +454,7 @@ require('lazy').setup({
             end
 
             local function tsCondExport()
-                local fname = vim.fn.expand("%:t")
-                return fname == "+server.ts"
+                return vim.fn.expand("%:t") == "+server.ts"
             end
             ls.add_snippets("typescript", {
                 s("try", {
@@ -541,6 +476,15 @@ require('lazy').setup({
                 }),
                 s("assert", {
                     t({ 'std.debug.assert(' }), i(1), t({ ');' }),
+                }),
+            })
+
+            ls.add_snippets("cpp", {
+                s("try", {
+                    t({ 'try {', '' }),
+                    t({ '    ' }), i(1), t({'',''}),
+                    t({ '} catch (const std::exception & ex) {', '' }),
+                    t({ '}' }),
                 }),
             })
         end,
@@ -602,26 +546,6 @@ require('lazy').setup({
             })
         end
     },
-
-    -- [[ COC ]] --
-    --[[
-    { 'neoclide/coc.nvim',
-        branch = 'release',
-        config = function ()
-            vim.keymap.set('i', '<C-e>', 'coc#pum#visible() ? coc#pum#prev(1) : "\\<C-h>"',                                      { expr = true, silent = true })
-            vim.keymap.set('i', '<C-d>', 'coc#pum#visible() ? coc#pum#next(1) : coc#refresh()',                                  { expr = true, silent = true })
-            vim.keymap.set('i', '<C-f>', 'coc#pum#visible() ? coc#pum#confirm() : "\\<C-g>u\\<CR>\\<c-r>=coc#on_enter()\\<CR>"', { expr = true, silent = true })
-            vim.keymap.set('n', '<F2>',       '<Plug>(coc-rename)')
-            vim.keymap.set('n', '<leader>[',  '<Plug>(coc-diagnostic-prev)',   { silent = true })
-            vim.keymap.set('n', '<leader>]',  '<Plug>(coc-diagnostic-next)',   { silent = true })
-            vim.keymap.set('n', '<leader>\\', ':<C-u>CocList diagnostics<cr>', { silent = true })
-            vim.keymap.set('n', 'gd',         '<Plug>(coc-definition)',        { silent = true })
-            vim.keymap.set('n', 'gy',         '<Plug>(coc-type-definition)',   { silent = true })
-            vim.keymap.set('n', 'gi',         '<Plug>(coc-implementation)',    { silent = true })
-            vim.keymap.set('n', 'gr',         '<Plug>(coc-references)',        { silent = true })
-        end,
-    },
-    ]]--
 
     -- Integration Development
     'skywind3000/asyncrun.vim',

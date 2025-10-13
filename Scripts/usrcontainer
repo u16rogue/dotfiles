@@ -39,7 +39,7 @@ case "$1" in
                 --network=host \
                 -v "$PWD":"$guest_mounted_dir":rw \
                 localhost/user-container \
-                new -s container-default
+                new -s default
         fi
         ;;
     sandbox)

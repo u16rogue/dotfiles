@@ -16,6 +16,6 @@ export XDG_SESSION_DESKTOP=sway
 export QT_SCREEN_SCALE_FACTORS="1;1"
 export MOZ_ENABLE_WAYLAND=1
 
-export PATH="$PATH:$(realpath "Packages/zig"):$(realpath "Scripts")"
+export PATH="$PATH:$(realpath "Scripts"):$(realpath "Packages/zig"):$(realpath ".cargo/bin")"
 
 exec sway

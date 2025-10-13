@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # tmux setup session
 
@@ -37,9 +37,10 @@ tmux resize-pane -Z -t $SESSION_NAME
 #
 #tmux split-pane -t $SESSION_NAME
 #tmux send-keys -t $SESSION_NAME "cd $SESSION_DIR;clear" C-m
-#
-#tmux select-window -t $SESSION_NAME:1
 
-if [ -f "$SESSION_DIR/tmux-ss.sh" ]; then
-    source "$SESSION_DIR/tmux-ss.sh"
+if [ -f "$SESSION_DIR/.tmux-ss" ]; then
+    source "$SESSION_DIR/.tmux-ss"
 fi
+
+# reselect our editor
+tmux select-window -t $SESSION_NAME:1
