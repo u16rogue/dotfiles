@@ -13,22 +13,22 @@ vim.opt.softtabstop    = 4
 vim.opt.shiftwidth     = 4
 vim.opt.expandtab      = true
 
---vim.opt.autoindent     = true
---vim.opt.copyindent     = true
+vim.opt.autoindent     = true
+vim.opt.copyindent     = true
 
 vim.opt.cmdheight      = 0
 vim.o.laststatus       = 3 -- keep status line at the bottom
 vim.opt.showmode       = false
 vim.opt.signcolumn     = 'yes'
 vim.wo.wrap            = true
-vim.opt.number         = true
 vim.opt.showcmd        = true
 vim.opt.wildmenu       = true
 vim.opt.showmatch      = true
 vim.opt.termguicolors  = true
 vim.opt.linebreak      = true
 vim.opt.pumheight      = 10
-vim.opt.relativenumber = true
+vim.opt.number         = true -- show current linu number of cursor
+vim.opt.relativenumber = true -- set line numbers relative to cursor
 
 vim.opt.clipboard      = 'unnamedplus'
 
@@ -60,12 +60,13 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 vim.cmd [[highlight LineNr guifg=#fff]]
 
 vim.diagnostic.config({
-    -- virtual_text = false,
+    virtual_text = true, -- show error message in-line of the error
     update_in_insert = false,
     severity_sort = true,
     checkCurrentLine = true,
     virtualTextCurrentLineOnly = true,
 })
+
 vim.o.updatetime = 250
 
 require('lazy').setup({
@@ -148,19 +149,18 @@ require('lazy').setup({
     { 'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         config = function ()
-            -- [[ Treesitter ]]
             require('nvim-treesitter.configs').setup {
-                ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim' },
+                ensure_installed = { 'c', 'cpp', 'zig', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim' },
                 auto_install = true,
                 highlight = { enable = true },
                 indent = { enable = true },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
-                        init_selection = '<c-space>',
-                        node_incremental = '<c-space>',
-                        scope_incremental = '<c-s>',
-                        node_decremental = '<M-space>',
+                        init_selection = 'gn',
+                        node_incremental = 'gn',
+                        scope_incremental = 'gr',
+                        -- node_decremental = '<M-space>',
                     },
                 },
                 textobjects = {
@@ -168,44 +168,45 @@ require('lazy').setup({
                         enable = true,
                         lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
                         keymaps = {
-                            -- You can use the capture groups defined in textobjects.scm
-                            ['aa'] = '@parameter.outer',
-                            ['ia'] = '@parameter.inner',
-                            ['af'] = '@function.outer',
-                            ['if'] = '@function.inner',
-                            ['ac'] = '@class.outer',
-                            ['ic'] = '@class.inner',
+                            -- UNUSED --
+                             -- ['aa'] = '@parameter.outer',
+                             -- ['ia'] = '@parameter.inner',
+                             -- ['af'] = '@function.outer',
+                             -- ['if'] = '@function.inner',
+                             -- ['ac'] = '@class.outer',
+                             -- ['ic'] = '@class.inner',
                         },
                     },
-                  -- move = {
-                  --   enable = true,
-                  --   set_jumps = true, -- whether to set jumps in the jumplist
-                  --   goto_next_start = {
-                  --     [']m'] = '@function.outer',
-                  --     [']]'] = '@class.outer',
-                  --   },
-                  --   goto_next_end = {
-                  --     [']M'] = '@function.outer',
-                  --     [']['] = '@class.outer',
-                  --   },
-                  --   goto_previous_start = {
-                  --     ['[m'] = '@function.outer',
-                  --     ['[['] = '@class.outer',
-                  --   },
-                  --   goto_previous_end = {
-                  --     ['[M'] = '@function.outer',
-                  --     ['[]'] = '@class.outer',
-                  --   },
-                  -- },
-                  -- swap = {
-                  --   enable = true,
-                  --   swap_next = {
-                  --     ['<leader>a'] = '@parameter.inner',
-                  --   },
-                  --   swap_previous = {
-                  --     ['<leader>A'] = '@parameter.inner',
-                  --   },
-                  -- },
+                    -- UNUSED --
+                    -- move = {
+                    --   enable = true,
+                    --   set_jumps = true, -- whether to set jumps in the jumplist
+                    --   goto_next_start = {
+                    --     [']m'] = '@function.outer',
+                    --     [']]'] = '@class.outer',
+                    --   },
+                    --   goto_next_end = {
+                    --     [']M'] = '@function.outer',
+                    --     [']['] = '@class.outer',
+                    --   },
+                    --   goto_previous_start = {
+                    --     ['[m'] = '@function.outer',
+                    --     ['[['] = '@class.outer',
+                    --   },
+                    --   goto_previous_end = {
+                    --     ['[M'] = '@function.outer',
+                    --     ['[]'] = '@class.outer',
+                    --   },
+                    -- },
+                    -- swap = {
+                    --   enable = true,
+                    --   swap_next = {
+                    --     ['<leader>a'] = '@parameter.inner',
+                    --   },
+                    --   swap_previous = {
+                    --     ['<leader>A'] = '@parameter.inner',
+                    --   },
+                    -- },
                 },
             }
         end,
@@ -236,10 +237,12 @@ require('lazy').setup({
         config = function ()
             -- Config Telescope
             local telescope = require('telescope.builtin')
-            vim.keymap.set('n', '<leader>ff', function() telescope.find_files() end)
-            vim.keymap.set('n', '<leader>fg', function() telescope.live_grep() end) -- NEEDS ripgrep
-            vim.keymap.set('n', '<leader>fb', function() telescope.buffers() end)
-            vim.keymap.set('n', '<leader>fh', function() telescope.help_tags() end)
+            vim.keymap.set('n', '<leader>ff', telescope.find_files)
+            vim.keymap.set('n', '<leader>fg', telescope.live_grep) -- NEEDS ripgrep
+            vim.keymap.set('n', '<leader>fb', telescope.buffers)
+            vim.keymap.set('n', 'gd', telescope.lsp_definitions)
+            -- UNUSED --
+            -- vim.keymap.set('n', '<leader>fh', telescope.help_tags)
         end,
     },
 
@@ -253,22 +256,23 @@ require('lazy').setup({
                 topdelete = { text = '‾' },
                 changedelete = { text = '~' },
             },
-            on_attach = function(bufnr)
-                local gs = require('gitsigns')
-                vim.keymap.set('n', '<leader>hp', gs.preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+            -- UNUSED --
+            -- on_attach = function(bufnr)
+            --     local gs = require('gitsigns')
+            --     vim.keymap.set('n', '<leader>hp', gs.preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
 
-                -- don't override the built-in and vim-fugitive keymaps
-                vim.keymap.set({'n', 'v'}, ']c', function()
-                    if vim.wo.diff then return ']c' end
-                    vim.schedule(function() gs.next_hunk() end)
-                    return '<Ignore>'
-                end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-                vim.keymap.set({'n', 'v'}, '[c', function()
-                    if vim.wo.diff then return '[c' end
-                    vim.schedule(function() gs.prev_hunk() end)
-                    return '<Ignore>'
-                end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
-            end,
+            --     -- don't override the built-in and vim-fugitive keymaps
+            --     vim.keymap.set({'n', 'v'}, ']c', function()
+            --         if vim.wo.diff then return ']c' end
+            --         vim.schedule(function() gs.next_hunk() end)
+            --         return '<Ignore>'
+            --     end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
+            --     vim.keymap.set({'n', 'v'}, '[c', function()
+            --         if vim.wo.diff then return '[c' end
+            --         vim.schedule(function() gs.prev_hunk() end)
+            --         return '<Ignore>'
+            --     end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+            -- end,
         },
     },
 
@@ -330,32 +334,27 @@ require('lazy').setup({
     { 'neovim/nvim-lspconfig',
         config = function ()
             local nvim_cmp_lsp = require('cmp_nvim_lsp')
-            local capabilities = nvim_cmp_lsp.default_capabilities()
-            local lc = require('lspconfig')
-
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('UserLspConfig', {}),
                 callback = function(ev)
                     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
-                    -- See `:help vim.lsp.*` for documentation on any of the below functions
                     local opts = { buffer = ev.buf }
-
                     vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
                     vim.keymap.set('n', '<leader>]', vim.diagnostic.goto_next)
                     vim.keymap.set('n', '<leader>[', vim.diagnostic.goto_prev)
                     vim.keymap.set('n', '<leader>\\', function () vim.diagnostic.open_float(nil, {focus=false}) end)
-                    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-                    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
                     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-                    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-                    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-                    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-                    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-                    vim.keymap.set('n', '<space>wl', function()
-                        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-                    end, opts)
-                    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+                    -- UNUSED --
+                    --vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+                    --vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+                    --vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+                    --vim.keymap.set('n', '<space>wl', function()
+                    --    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+                    --end, opts)
+                    -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+                    -- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts) -- use telescope's
+                    --vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+                    --vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
                 end,
             })
         end,
@@ -373,8 +372,8 @@ require('lazy').setup({
                 enabled = function()
                     -- disable completion in comments
                     local context = require 'cmp.config.context'
-                    -- keep command mode completion enabled when cursor is in a comment
-                    if vim.api.nvim_get_mode().mode == 'c' then
+                    -- disable completion on comments when in insert mode
+                    if vim.api.nvim_get_mode().mode ~= 'i' then
                       return true
                     else
                       return not context.in_treesitter_capture('comment')
@@ -392,8 +391,8 @@ require('lazy').setup({
                     ['<C-f>'] = cmp.mapping.confirm({ select = true }),
                 }),
                 sources = cmp.config.sources({
-                    { name = 'nvim_lsp' },
                     { name = 'luasnip' },
+                    { name = 'nvim_lsp' },
                 },
                 {
                     { name = 'buffer' },
@@ -444,18 +443,6 @@ require('lazy').setup({
             local t = ls.text_node
             local i = ls.insert_node
 
-            local function makeSveltekitHttpMethods(method)
-                return {
-                    t({ 'export const ' .. method .. ': RequestHandler = async function (e): Promise<Response> {', '' }),
-                    t({ '    ' }), i(1), t({'',''}), 
-                    t({ '    return json({ message: \'Not implemented\' }, { status: 501 });' }), t({'',''}), 
-                    t({ '}' }),
-                }
-            end
-
-            local function tsCondExport()
-                return vim.fn.expand("%:t") == "+server.ts"
-            end
             ls.add_snippets("typescript", {
                 s("try", {
                     t({ 'try {', '' }),
@@ -464,15 +451,18 @@ require('lazy').setup({
                     t({ '    console.error(ex);', '' }),
                     t({ '}' }),
                 }),
-                s('export const GET', makeSveltekitHttpMethods('GET'), { condition = tsCondExport }),
-                s('export const POST', makeSveltekitHttpMethods('POST'), { condition = tsCondExport }),
-                s('export const PATCH', makeSveltekitHttpMethods('PATCH'), { condition = tsCondExport }),
-                s('export const DELETE', makeSveltekitHttpMethods('DELETE'), { condition = tsCondExport }),
+            })
+
+            ls.add_snippets("svelte", {
+                s('app-path', { t({ 'import * as app_paths from "$app/paths";' }) }),
             })
 
             ls.add_snippets("zig", {
-                s("import std", {
+                s("import-std", {
                     t({ 'const std = @import("std");' }),
+                }),
+                s("Allocator", {
+                    t({ 'std.mem.Allocator' }),
                 }),
                 s("assert", {
                     t({ 'std.debug.assert(' }), i(1), t({ ');' }),
@@ -613,11 +603,18 @@ require('lazy').setup({
             dap.listeners.before.event_exited['dapui_config']     = function() dapui.close() end
         end,
     },
+
     'nvim-neotest/nvim-nio',
-    { "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} },
+
+    { "rcarriga/nvim-dap-ui",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "nvim-neotest/nvim-nio",
+        },
+    },
+
     'theHamsta/nvim-dap-virtual-text',
 
-    -- 'ryanoasis/vim-devicons',
     'tpope/vim-ragtag',
 
     -- Language
@@ -655,19 +652,17 @@ require('lazy').setup({
         config = function ()
             -- Easy align
             vim.keymap.set('x', '<leader>aa', '<plug>(EasyAlign)', { silent = true }) -- align align
-            --vim.keymap.set('n', 'ga', '<plug>(EasyAlign)', { silent = true })
         end,
     },
 
     -- Scope splitter / joiner
-    {
-      'Wansmer/treesj',
-      -- keys = { '<space>m', '<space>j', '<space>s' },
-      dependencies = { 'nvim-treesitter/nvim-treesitter' },
-      config = function()
-          require('treesj').setup({ use_default_keymaps = false })
-          -- Scope split
-          vim.keymap.set('n', '<leader>as', '<Cmd>TSJToggle<CR>', { silent = true }) -- align scope
-      end,
+    { 'Wansmer/treesj',
+        -- keys = { '<space>m', '<space>j', '<space>s' },
+        dependencies = { 'nvim-treesitter/nvim-treesitter' },
+        config = function()
+            require('treesj').setup({ use_default_keymaps = false })
+            -- Scope split
+            vim.keymap.set('n', '<leader>as', '<Cmd>TSJToggle<CR>', { silent = true }) -- align scope
+        end,
     },
 })

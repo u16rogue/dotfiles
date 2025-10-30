@@ -1,10 +1,17 @@
 **
 .*
 !.gitignore
-!mkignore
-!moonlight-obsvkcap.sh
-!tmux-ss
-!toggledpms.sh
 
-!user-container.containerfile
+# Create ignore files
+!mkignore
+
+# Tmux setup session
+!tmux-ss
+
+# User containers
 !usrcontainer
+!user-container.containerfile
+
+# External scripts used by others
+!toggledpms.sh
+!moonlight-obsvkcap.sh

@@ -7,7 +7,6 @@
 
 # Vars
 set $mod Mod4
-set $floating_mod $mod
 
 set $up w
 set $down s
@@ -135,6 +134,7 @@ bindsym {
   $mod+Shift+e exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
   $mod+f fullscreen
   $mod+Shift+space floating toggle
+  $mod+Shift+Tab sticky toggle
   $mod+space focus mode_toggle
   $mod+Tab layout tabbed
   $mod+b splith
