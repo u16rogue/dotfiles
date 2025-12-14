@@ -42,15 +42,15 @@ case "$1" in
                 new -s default
         fi
         ;;
-    sandbox)
+    temp)
         image_exists || error_exit "Podman image 'localhost/user-container' does not exist."
-        podman run -it --name sandbox \
+        podman run -it --name "temp-$container_name" \
             --rm \
             --user $(id -u):$(id -g) \
-            --hostname sandbox \
+            --hostname "temp-$container_name" \
             --network=host \
             localhost/user-container \
-            new -s sandbox-default
+            new -s default
         ;;
     remove)
         container_name="$(get_container_name)"

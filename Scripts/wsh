@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+
+# Creates a wrapped shell environment
+
+SCRIPT_NAME=$(basename "$0")
+
+print() {
+    printf "[$SCRIPT_NAME] ${1}"
+}
+
+err_exit() {
+    print "\n[error] ${1}"
+    exit 1
+}
+
+check_command() {
+    command -v "${1}" > /dev/null 2>&1
+}
+
+# ---
+
+check_command bwrap || err_exit "bwrap is not installed or available"
+check_command realpath || err_exit "realpath is not installed or available"
+
+USE_TERM="bash"
+ID="$(echo "${PWD}" | base64)"
+SBX_TMP_DIR="/tmp/${ID}"
+SBX_SELF="${SBX_TMP_DIR}/${SCRIPT_NAME}"
+
+print "sandbox id: '${ID}'\n"
+
+if [ ! -d "${SBX_TMP_DIR}" ]; then
+    print "generating sandbox config...\n"
+    mkdir -p ${SBX_TMP_DIR} || err_exit "failed to create config directory"
+    printf "#!/usr/bin/env bash\necho \"[\$(basename \"\$0\")] you're already in a sandboxed shell\"\nexit 1" > "${SBX_SELF}" || err_exit "failed to generate self script for sandbox"
+    chmod +x "${SBX_SELF}" || err_exit "failed to set '${SBX_SELF}' as executable"
+fi
+
+print "setting up params... "
+params+=(                                                  \
+    --die-with-parent                                      \
+    --dev /dev                                             \
+    --unshare-pid                                          \
+    --proc /proc                                           \
+    --unshare-uts                                          \
+    --hostname "$(cat /etc/hostname):${SCRIPT_NAME}.${ID}" \
+    --ro-bind /usr/bin /usr/bin                            \
+    --ro-bind /usr/lib /usr/lib                            \
+    --ro-bind /usr/share /usr/share                        \
+    --ro-bind /etc/resolv.conf /etc/resolv.conf            \
+    --ro-bind "${SBX_TMP_DIR}" "${SBX_TMP_DIR}"            \
+)
+echo "ok!"
+
+print "setting up env... "
+params+=(                                                                  \
+    --clearenv                                                             \
+    --setenv USER ${USER}                                                  \
+    --setenv HOME ${HOME}                                                  \
+    --setenv PATH "/usr/local/sbin:/usr/local/bin:/usr/bin:${SBX_TMP_DIR}" \
+    --setenv LANG "en_US.UTF-8"                                            \
+    --setenv TERM "xterm-256color"                                         \
+    --setenv LC_ALL "en_US.UTF-8"                                          \
+)
+echo "ok!"
+
+print "setting up root symlinks... "
+params+=(                   \
+    --ro-bind /bin /bin     \
+    --ro-bind /lib /lib     \
+    --ro-bind /lib64 /lib64 \
+)
+echo "ok!"
+
+# Setup for fish if available
+print "detecting 'fish'..."
+if check_command "fish"; then
+    printf " setting up..."
+    DIR_CONF="${HOME}/.config/fish"
+    if [ -d "${DIR_CONF}" ]; then
+        params+=(--ro-bind "${DIR_CONF}" "${DIR_CONF}")
+    fi
+
+    DIR_CACHE="${HOME}/.cache/fish"
+    if [ -d "${DIR_CACHE}" ]; then
+        params+=(--ro-bind "${DIR_CACHE}" "${DIR_CACHE}")
+    fi
+    USE_TERM="fish"
+    echo " ok!"
+else
+    echo " skip!"
+fi
+
+print "detecting 'tmux'..."
+if check_command "tmux"; then
+    printf " setting up..."
+    DIR_CONF="${HOME}/.config/tmux"
+    if [ -d "${DIR_CONF}" ]; then
+        params+=(--ro-bind "${DIR_CONF}" "${DIR_CONF}")
+    fi
+
+    echo " ok!"
+else
+    echo " skip!"
+fi
+
+# Setup bun if available
+print "detecting 'bun'... "
+if check_command "bun"; then
+    printf "setting up... "
+    BUN_PATH=$(which bun)
+
+    if [ -L ${BUN_PATH} ]; then
+        printf "resolving link... "
+        BUN_PATH=$(realpath "$(dirname ${BUN_PATH})/$(readlink "${BUN_PATH}")")
+    fi
+
+    params+=(--ro-bind ${BUN_PATH} ${BUN_PATH})
+    echo "ok!"
+else
+    echo "skip!"
+fi
+
+print "running sandboxed shell for '${PWD}'...\n"
+bwrap \
+    ${params[@]} \
+    --bind "${PWD}" "${PWD}" \
+    --chdir "${PWD}"         \
+    ${USE_TERM}
+
+print "exited sandboxed shell as ${?}"

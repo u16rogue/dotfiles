@@ -69,6 +69,11 @@ vim.diagnostic.config({
 
 vim.o.updatetime = 250
 
+-- word wrap fix
+for _k, v in pairs({ 'j', 'k' }) do
+    vim.keymap.set('n', v, 'v:count == 0 ? "g' .. v .. '" : "' .. v .. '"', { expr = true, silent = true })
+end
+
 require('lazy').setup({
     { 'catppuccin/nvim',
         name = 'catppuccin',
@@ -454,7 +459,7 @@ require('lazy').setup({
             })
 
             ls.add_snippets("svelte", {
-                s('app-path', { t({ 'import * as app_paths from "$app/paths";' }) }),
+                s('import-app-path', { t({ 'import * as app_paths from "$app/paths";' }) }),
             })
 
             ls.add_snippets("zig", {
@@ -489,22 +494,6 @@ require('lazy').setup({
     { 'p00f/clangd_extensions.nvim',
         config = function ()
             require("clangd_extensions").setup({
-                --[[
-                inlay_hints = {
-                    inline = vim.fn.has("nvim-0.10") == 1,
-                    only_current_line = false,
-                    only_current_line_autocmd = { "CursorHold" },
-                    show_parameter_hints = true,
-                    parameter_hints_prefix = "<- ",
-                    other_hints_prefix = "=> ",
-                    max_len_align = false,
-                    max_len_align_padding = 1,
-                    right_align = true,
-                    right_align_padding = 7,
-                    highlight = "Comment",
-                    priority = 100,
-                },
-                ]]--
                 ast = {
                     role_icons = {
                         type = "🄣",
@@ -539,6 +528,14 @@ require('lazy').setup({
 
     -- Integration Development
     'skywind3000/asyncrun.vim',
+    { "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            },
+        },
+    },
 
     -- Debugging
     { 'mfussenegger/nvim-dap',
@@ -642,6 +639,10 @@ require('lazy').setup({
             vim.g.cpp_member_highlight     = 1
             vim.g.cpp_simple_highlight     = 1
         end,
+    },
+
+    { 'mrcjkb/rustaceanvim',
+        version = '^7',
     },
 
     -- Multi-case, regex replace

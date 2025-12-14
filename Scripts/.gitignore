@@ -15,3 +15,6 @@
 # External scripts used by others
 !toggledpms.sh
 !moonlight-obsvkcap.sh
+
+# sandboxed shell
+!wsh

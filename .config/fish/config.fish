@@ -1,6 +1,6 @@
 if not functions -q fundle; eval (curl -sfL https://git.io/fundle-install); end
-fundle plugin 'danhper/fish-ssh-agent'
-fundle init
+#fundle plugin 'danhper/fish-ssh-agent'
+#fundle init
 
 if status is-interactive
   set -g fish_greeting
