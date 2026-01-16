@@ -7,6 +7,7 @@ export IDF_TOOLS_PATH=$(realpath "Packages/esp-idf/.espressif")
 
 export TERM=alacritty
 export EDITOR=vim
+export SHELL=$(which fish)
 
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
@@ -17,5 +18,4 @@ export QT_SCREEN_SCALE_FACTORS="1;1"
 export MOZ_ENABLE_WAYLAND=1
 
 export PATH="$PATH:$(realpath "Scripts"):$(realpath ".zig"):$(realpath ".cargo/bin"):$(realpath ".luarocks/bin")"
-
-exec sway
+exec sway --unsupported-gpu

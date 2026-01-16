@@ -70,7 +70,7 @@ case "$1" in
                 $SCRIPT_DIR
             ;;
         *)
-        echo "Usage: $0 [start|sandbox|remove|build]"
+        echo "Usage: $0 [start|temp|remove|build]"
         exit 1
         ;;
 esac

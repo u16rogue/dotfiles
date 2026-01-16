@@ -18,3 +18,4 @@
 
 # sandboxed shell
 !wsh
+!tmux-ws # but with tmux session setup and everything

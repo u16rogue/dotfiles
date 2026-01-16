@@ -29,4 +29,9 @@ abbr --add nvims nvim -S .nvimsession
 abbr --add tmuxx tmux new -s default
 abbr --add lslh ls -lh
 
-set fish_autosuggestion_enabled 0
+if test -n "$WSH_ID"
+    set fish_autosuggestion_enabled 1
+else
+    set fish_autosuggestion_enabled 0
+end
+
