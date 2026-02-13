@@ -1,0 +1,11 @@
+**
+.*
+!.gitignore
+!common.nix
+!flake.lock
+!flake.nix
+!README.md
+!users/
+!users/user/
+!host/
+!host/mistylake/

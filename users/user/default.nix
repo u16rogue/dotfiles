@@ -1,0 +1,74 @@
+{ username, persist_path, inputs, ... }: {
+    nixos-system = { pkgs, ... }: {
+        imports = [
+            ((import ./apps/hyprland/default.nix) { inherit username; })
+            ((import ./apps/waybar/default.nix) { inherit username; })
+            ((import ./apps/fish/default.nix) { inherit username; })
+            ((import ./apps/kitty/default.nix) { inherit username; })
+            ((import ./apps/fuzzel/default.nix) { inherit username; })
+            ((import ./apps/wiremix/default.nix) { inherit username; })
+            ((import ./apps/btop/default.nix) { inherit username; })
+            ((import ./apps/yazi/default.nix) { inherit username; })
+
+            ((import ./apps/tmux/default.nix) { inherit username; })
+            ((import ./apps/zellij/default.nix) { inherit username; })
+            ((import ./apps/nvim/default.nix) { inherit username inputs; })
+
+            ((import ./apps/vesktop/default.nix) { inherit username persist_path; })
+            ((import ./apps/keepassxc/default.nix) { inherit username persist_path; })
+            ((import ./apps/firefox/default.nix) { inherit username persist_path; })
+            ((import ./apps/monero-gui/default.nix) { inherit username persist_path; })
+            ((import ./apps/moonlight-stream/default.nix) { inherit username persist_path; })
+        ];
+
+        # todo: make this more user centric unless we're making a
+        # single user only nix config
+        services.pcscd.enable = true;
+        programs.gnupg.agent = {
+             enable = true;
+             pinentryPackage = pkgs.pinentry-curses;
+             enableSSHSupport = true;
+        };
+
+        users.users.${username} = {
+            isNormalUser = true;
+            extraGroups = [ "wheel" ];
+            hashedPasswordFile = "${persist_path}/users/${username}/password"; # TODO: better way
+            packages = [];
+            shell = pkgs.fish;
+        };
+    };
+
+    home-manager = { pkgs, ... }: {
+        home = {
+            inherit username;
+            homeDirectory = "/home/${username}";
+            stateVersion = "25.11";
+            packages = [
+                pkgs.git
+                pkgs.openssh
+                pkgs.jq
+                pkgs.bubblewrap
+            ] ++ ((import ./scripts/default.nix) { inherit pkgs; });
+            persistence."${persist_path}" = {
+                directories = [
+                    "downloads"
+                    "media"
+                    "documents"
+                    "projects"
+                    "scripts"
+                    { directory = ".gnupg"; mode = "0700"; }
+                    { directory = ".ssh"; mode = "0700"; }
+                    { directory = ".local/share/keyrings"; mode = "0700"; }
+                ];
+                files = [
+                ];
+            };
+            sessionPath = [];
+        };
+
+        programs.gpg = {
+            enable = true;
+        };
+    };
+}

@@ -1,0 +1,6 @@
+**
+.*
+!.gitignore
+!default.nix
+!tmuxss
+!mkignore
