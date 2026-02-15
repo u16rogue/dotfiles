@@ -9,29 +9,22 @@ in {
 
         # Trick home-manager into generating the profile into our sandbox directory
         # by symlinking the destination
-        home.activation.linkFirefox = lib.hm.dag.entryAfter ["writeBoundary"] ''
+        home.activation.linkFirefox = lib.hm.dag.entryAfter ["writeBoundary"] /*bash*/ ''
             mkdir -p ~/.emulated-root/firefox/home/${username}/.mozilla
             ln -sf ~/.emulated-root/firefox/home/${username}/.mozilla ~/
-            ln -sf ~/.emulated-root/firefox/home/${username}/downloads ~/downloads/firefox-downloads
+            if [ ! -e ~/downloads/firefox-downloads ]; then
+                ln -sf ~/.emulated-root/firefox/home/${username}/downloads ~/downloads/firefox-downloads
+            fi
         '';
 
         xdg.desktopEntries.firefox = {
-            name = "Firefox (+Profile Manager)";
-            exec = "firefox -ProfileManager";
+            name = "Firefox";
+            exec = "firefox -P \"default\"";
             icon = "${pkgs.firefox}/share/icons/hicolor/48x48/apps/firefox.png";
             terminal = false;
             categories = [ "Network" "WebBrowser" ];
             mimeType = [ "text/html" "text/xml" ];
         };
-
-        #xdg.desktopEntries.firefox-default = {
-        #    name = "Firefox (Profile: Default)";
-        #    exec = "firefox -P \"default\"";
-        #    icon = "${pkgs.firefox}/share/icons/hicolor/48x48/apps/firefox.png";
-        #    terminal = false;
-        #    categories = [ "Network" "WebBrowser" ];
-        #    mimeType = [ "text/html" "text/xml" ];
-        #};
 
         programs.firefox = {
             enable = true;

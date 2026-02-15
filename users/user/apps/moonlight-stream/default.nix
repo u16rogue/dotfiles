@@ -18,7 +18,18 @@ in {
                 network
                 gui
                 gpu
+                wayland
+                xwayland
+                (set-env "IGNORE_RFI_LATENCY_BUG" 1)
                 (rw-bind (noescape "~/.emulated-root/moonlight-stream/home/${username}") (noescape "~/"))
+                (add-runtime /*bash*/ ''
+                    # Hardware acceleration fix for nvidia
+                    for dev in /dev/nvidia*; do
+                        if [ -e "$dev" ]; then
+                            RUNTIME_ARGS+=(--dev-bind "$dev" "$dev")
+                        fi
+                    done
+                '')
             ]))
         ];
     };
