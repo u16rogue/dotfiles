@@ -3,7 +3,7 @@
         imports = [
             ((import ./apps/hyprland/default.nix) { inherit username; })
             ((import ./apps/waybar/default.nix) { inherit username; })
-            ((import ./apps/fish/default.nix) { inherit username; })
+            ((import ./apps/fish/default.nix) { inherit username inputs; })
             ((import ./apps/kitty/default.nix) { inherit username; })
             ((import ./apps/fuzzel/default.nix) { inherit username; })
             ((import ./apps/wiremix/default.nix) { inherit username; })
@@ -29,6 +29,7 @@
              pinentryPackage = pkgs.pinentry-curses;
              enableSSHSupport = true;
         };
+        # ---
 
         users.users.${username} = {
             isNormalUser = true;

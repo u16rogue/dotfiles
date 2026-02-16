@@ -116,6 +116,7 @@
         };
         filetree.nvimTree = {
             enable = true;
+            openOnSetup = false;
             setupOpts = {
                 renderer = {
                     group_empty = true;
@@ -129,7 +130,8 @@
                         open_win_config = { width = 80; height = 100; };
                     };
                 };
-                git.ignore = false;
+                git.enable = true;
+                modified.enable = true;
                 filters.dotfiles = false;
             };
             mappings.toggle = "<F1>";

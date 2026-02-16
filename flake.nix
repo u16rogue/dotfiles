@@ -67,6 +67,10 @@
             url = "github:nix-community/impermanence";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        wrappers = {
+            url = "github:lassulus/wrappers";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
         jail-nix = { # bwrap utility
             url = "sourcehut:~alexdavid/jail.nix";
             inputs.nixpkgs.follows = "nixpkgs";

@@ -256,7 +256,8 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
         "nur": "nur",
-        "nvf": "nvf"
+        "nvf": "nvf",
+        "wrappers": "wrappers"
       }
     },
     "systems": {
@@ -271,6 +272,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "wrappers": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771144933,
+        "narHash": "sha256-dyCUO42PVkSswphT+AESvDI/3gHbUKVtglluD3uCdFQ=",
+        "owner": "lassulus",
+        "repo": "wrappers",
+        "rev": "7ba6fe0f588aefb0607532e6d4cb986abdbd3afa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lassulus",
+        "repo": "wrappers",
         "type": "github"
       }
     }

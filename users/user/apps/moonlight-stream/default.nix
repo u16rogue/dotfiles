@@ -18,8 +18,6 @@ in {
                 network
                 gui
                 gpu
-                wayland
-                xwayland
                 (set-env "IGNORE_RFI_LATENCY_BUG" 1)
                 (rw-bind (noescape "~/.emulated-root/moonlight-stream/home/${username}") (noescape "~/"))
                 (add-runtime /*bash*/ ''
