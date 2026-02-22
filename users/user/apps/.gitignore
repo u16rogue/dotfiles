@@ -22,6 +22,8 @@
 !moonlight-stream/**
 !nvim/
 !nvim/**
+!remmina/
+!remmina/**
 !tmux/
 !tmux/**
 !vesktop/

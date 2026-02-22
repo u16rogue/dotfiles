@@ -1,4 +1,4 @@
-{ username, inputs, ... }: { ... }: {
+{ username, ... }: { inputs, ... }: {
     home-manager.users.${username} = { ... }: {
         imports = [ inputs.nvf.homeManagerModules.default ];
         programs.nvf = {

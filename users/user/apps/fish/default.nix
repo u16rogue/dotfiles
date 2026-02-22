@@ -1,4 +1,4 @@
-{ username, inputs, ... }: { pkgs, ... }: {
+{ username, ... }: { inputs, pkgs, ... }: {
     #nixpkgs.overlays = [(final: prev: {
     #    fish = (inputs.wrappers.lib.wrapPackage {
     #        inherit pkgs;

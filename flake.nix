@@ -1,8 +1,4 @@
-#   user_entries
-#|> builtins.attrNames
-#|> builtins.filter (e: user_entries.${e} == "directory")
-#|> builtins.map (p: ./users/${p}/default.nix)
-
+# TODO: for packages username shouldn't be hardcoded / sourced
 {
     outputs = { self, nixpkgs, ... }@inputs:
         let
@@ -79,10 +75,10 @@
             url = "github:notashelf/nvf";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        #nixpak = {
-        #    url = "github:nixpak/nixpak";
-        #    inputs.nixpkgs.follows = "nixpkgs";
-        #};
+        nixpak = { # bwrap utility
+            url = "github:nixpak/nixpak";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
         #nixwrap = {
         #    url = "github:rti/nixwrap";
         #    inputs.nixpkgs.follows = "nixpkgs";

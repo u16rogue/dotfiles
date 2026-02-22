@@ -3,7 +3,7 @@
         imports = [
             ((import ./apps/hyprland/default.nix) { inherit username; })
             ((import ./apps/waybar/default.nix) { inherit username; })
-            ((import ./apps/fish/default.nix) { inherit username inputs; })
+            ((import ./apps/fish/default.nix) { inherit username; })
             ((import ./apps/kitty/default.nix) { inherit username; })
             ((import ./apps/fuzzel/default.nix) { inherit username; })
             ((import ./apps/wiremix/default.nix) { inherit username; })
@@ -12,13 +12,15 @@
 
             ((import ./apps/tmux/default.nix) { inherit username; })
             ((import ./apps/zellij/default.nix) { inherit username; })
-            ((import ./apps/nvim/default.nix) { inherit username inputs; })
+            ((import ./apps/nvim/default.nix) { inherit username; })
 
             ((import ./apps/vesktop/default.nix) { inherit username persist_path; })
             ((import ./apps/keepassxc/default.nix) { inherit username persist_path; })
             ((import ./apps/firefox/default.nix) { inherit username persist_path; })
             ((import ./apps/monero-gui/default.nix) { inherit username persist_path; })
+
             ((import ./apps/moonlight-stream/default.nix) { inherit username persist_path; })
+            ((import ./apps/remmina/default.nix) { inherit username persist_path; })
         ];
 
         # todo: make this more user centric unless we're making a

@@ -1,5 +1,9 @@
-{ username, persist_path, ... }: { inputs, pkgs, ... }: let
+{ username, persist_path, ... }: { config, inputs, pkgs, ... }: let
     jail = inputs.jail-nix.lib.init pkgs;
+    mkNixPak = inputs.nixpak.lib.nixpak {
+       inherit (pkgs) lib;
+       inherit pkgs; 
+    };
 in {
     home-manager.users.${username} = {
 
@@ -18,8 +22,12 @@ in {
                 network
                 gui
                 gpu
-                (set-env "IGNORE_RFI_LATENCY_BUG" 1)
                 (rw-bind (noescape "~/.emulated-root/moonlight-stream/home/${username}") (noescape "~/"))
+                # fix attempt for latency:
+                #(set-env "IGNORE_RFI_LATENCY_BUG" 1)
+                #(set-env "SDL_DEBUG" 1)
+                #(readonly "/nix/store")
+                #(add-pkg-deps [ config.boot.kernelPackages.nvidiaPackages.latest ])
                 (add-runtime /*bash*/ ''
                     # Hardware acceleration fix for nvidia
                     for dev in /dev/nvidia*; do
