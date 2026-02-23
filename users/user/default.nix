@@ -3,13 +3,13 @@
         imports = [
             ((import ./apps/hyprland/default.nix) { inherit username; })
             ((import ./apps/waybar/default.nix) { inherit username; })
-            ((import ./apps/fish/default.nix) { inherit username; })
             ((import ./apps/kitty/default.nix) { inherit username; })
             ((import ./apps/fuzzel/default.nix) { inherit username; })
             ((import ./apps/wiremix/default.nix) { inherit username; })
             ((import ./apps/btop/default.nix) { inherit username; })
             ((import ./apps/yazi/default.nix) { inherit username; })
 
+            ((import ./apps/fish/default.nix) { inherit username; })
             ((import ./apps/tmux/default.nix) { inherit username; })
             ((import ./apps/zellij/default.nix) { inherit username; })
             ((import ./apps/nvim/default.nix) { inherit username; })
@@ -22,6 +22,11 @@
             ((import ./apps/moonlight-stream/default.nix) { inherit username persist_path; })
             ((import ./apps/remmina/default.nix) { inherit username persist_path; })
         ];
+
+        nixpkgs.overlays = [(final: prev: {
+            nushell = ((import ./packs/nushell/default.nix) { inherit inputs; pkgs = prev; });
+        })];
+
 
         # todo: make this more user centric unless we're making a
         # single user only nix config
@@ -52,6 +57,7 @@
                 pkgs.openssh
                 pkgs.jq
                 pkgs.bubblewrap
+                pkgs.nushell
             ] ++ ((import ./scripts/default.nix) { inherit pkgs; });
             persistence."${persist_path}" = {
                 directories = [
