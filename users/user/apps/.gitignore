@@ -24,6 +24,8 @@
 !nvim/**
 !remmina/
 !remmina/**
+!steamguard-cli/
+!steamguard-cli/**
 !tmux/
 !tmux/**
 !vesktop/

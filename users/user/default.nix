@@ -7,6 +7,7 @@
         ((import ./apps/wiremix/default.nix) { inherit username; })
         ((import ./apps/btop/default.nix) { inherit username; })
         ((import ./apps/yazi/default.nix) { inherit username; })
+        ((import ./apps/steamguard-cli/default.nix) { inherit username persist_path; })
 
         ((import ./apps/fish/default.nix) { inherit username; })
         ((import ./apps/tmux/default.nix) { inherit username; })
