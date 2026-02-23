@@ -23,7 +23,7 @@
     ];
 
     nixpkgs.overlays = [(final: prev: {
-        nushell = ((import ./packs/nushell/default.nix) { inherit inputs; pkgs = prev; });
+        nushell = ((import ./packs/nushell/package.nix) { inherit inputs; pkgs = prev; });
     })];
 
     # todo: make this more user centric unless we're making a

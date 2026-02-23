@@ -16,6 +16,5 @@
         
         # Session
         ${pkgs.tmux}/bin/tmux new-session -d -s "$SESSION_NAME" -A -c "$SESSION_DIR"
-        echo "new session created"
     '')
 ]
