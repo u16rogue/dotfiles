@@ -10,39 +10,16 @@
                     inherit system;
                     specialArgs = { inherit inputs system; };
                     modules = [
-                        # stylix.nixosModules.stylix
                         inputs.nur.modules.nixos.default
                         inputs.impermanence.nixosModules.impermanence
                         inputs.home-manager.nixosModules.home-manager
                         ./common.nix
                         ./host/mistylake/configuration.nix
-                    ] ++ (
-                        let
+                        ((import ./users/user/default.nix) {
                             persist_path = "/persist"; # TODO: this should be provided by the host
-                            users_dir = builtins.readDir ./users;
-                            user_entries = nixpkgs.lib.pipe users_dir [
-                                builtins.attrNames
-                                (builtins.filter (e: users_dir.${e} == "directory"))
-                                (builtins.map (username: {
-                                    inherit username;
-                                    inherit persist_path;
-                                    module = import ./users/${username}/default.nix { inherit username persist_path inputs; };
-                                }))
-                            ];
-                            result = []
-                                ++ # base users (TODO: detect the hosts array inside if it should be enabled for this host)
-                                builtins.map ({ username, ... }: {
-                                    users.users.${username}.enable = true;
-                                }) user_entries
-                                ++ # home-manager
-                                builtins.map ({ username, module, ... }: {
-                                    home-manager.users.${username} = module.home-manager;
-                                }) user_entries
-                                ++ # nixos-system
-                                builtins.map ({ module, ... }: module.nixos-system) user_entries
-                            ;
-                        in result
-                    );
+                            username = "user";
+                        })
+                    ];
                 };
             };
         };
