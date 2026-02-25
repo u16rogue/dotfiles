@@ -5,8 +5,9 @@ in {
         home.persistence."${persist_path}".directories = [ ".emulated-root/steamguard-cli/home/${username}" ];
         home.packages = [
             (jail "steamguard" pkgs.steamguard-cli (with jail.combinators; [
-                  network
-                  (rw-bind (noescape "~/.emulated-root/steamguard-cli/home/${username}") (noescape "~/"))
+                network
+                (set-env "RUST_BACKTRACE" "full")
+                (rw-bind (noescape "~/.emulated-root/steamguard-cli/home/${username}") (noescape "~/"))
             ]))
         ];
     };

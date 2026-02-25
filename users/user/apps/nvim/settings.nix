@@ -118,12 +118,15 @@
             enable = true;
             openOnSetup = false;
             setupOpts = {
+                disable_netrw = true;
                 renderer = {
                     group_empty = true;
                     indent_width = 2;
                     indent_markers = { enable = true; inline_arrows = false; };
+                    #icons.glyphs.git = { deleted = ""; ignored = "◌"; renamed = "➜"; staged = "✓"; unmerged = ""; unstaged = "✗"; untracked = "★"; };
                 };
                 view = {
+                    signcolumn = "yes";
                     number = true;
                     float = {
                         enable = true;

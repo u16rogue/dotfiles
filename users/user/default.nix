@@ -7,7 +7,6 @@
         ((import ./apps/wiremix/default.nix) { inherit username; })
         ((import ./apps/btop/default.nix) { inherit username; })
         ((import ./apps/yazi/default.nix) { inherit username; })
-        ((import ./apps/steamguard-cli/default.nix) { inherit username persist_path; })
 
         ((import ./apps/fish/default.nix) { inherit username; })
         ((import ./apps/tmux/default.nix) { inherit username; })
@@ -18,7 +17,7 @@
         ((import ./apps/keepassxc/default.nix) { inherit username persist_path; })
         ((import ./apps/firefox/default.nix) { inherit username persist_path; })
         ((import ./apps/monero-gui/default.nix) { inherit username persist_path; })
-
+        ((import ./apps/steamguard-cli/default.nix) { inherit username persist_path; })
         ((import ./apps/moonlight-stream/default.nix) { inherit username persist_path; })
         ((import ./apps/remmina/default.nix) { inherit username persist_path; })
     ];
