@@ -133,7 +133,10 @@
                         open_win_config = { width = 80; height = 100; };
                     };
                 };
-                git.enable = true;
+                git = {
+                    enable = true;
+                    ignore = false;
+                };
                 modified.enable = true;
                 filters.dotfiles = false;
             };
