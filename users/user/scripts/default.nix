@@ -28,6 +28,45 @@
         ${pkgs.git}/bin/git commit --amend --no-edit -S
     '')
 
+    # nix flake package version compare
+    (pkgs.writeShellScriptBin "nix-pkgvercmp" ''
+        # Get nixos
+        printf "nixos: "
+        if command -v "nixos-version" &> /dev/null; then
+            NIXOS_REV=$(nixos-version --json | ${pkgs.jq}/bin/jq -r '.nixpkgsRevision')
+            if [[ -n "$NIXOS_REV" && "$NIXOS_REV" != "null" ]]; then
+                echo "$NIXOS_REV"
+            else
+                echo "[error] invalid rev: '$NIXOS_REV'"
+            fi
+        else
+            echo "[error] command 'nixos-version' is unavailable."
+        fi
+
+        # Get current flake
+        LOCK_FILE="$PWD/flake.lock"
+        printf "flake: "
+        if [[ -f "$LOCK_FILE" ]]; then
+            FLAKE_REV=$(${pkgs.jq}/bin/jq -r '
+                .nodes
+                | to_entries[]
+                | select((.value.locked.owner // "" | ascii_downcase) == "nixos"
+                    and  (.value.locked.repo // "" | ascii_downcase) == "nixpkgs"
+                  )
+                | .value.locked.rev
+            ' "$LOCK_FILE" | head -1)
+            if [[ -n "$FLAKE_REV" && "$FLAKE_REV" != "null" ]]; then
+                echo "$FLAKE_REV"
+            else
+                echo "[error] invalid rev: '$FLAKE_REV'"
+            fi
+        else
+            echo "[error] flake.lock missing at '$LOCK_FILE'"
+        fi
+
+        [[ "$NIXOS_REV" == "$FLAKE_REV" ]] && echo "in sync" || { echo "out of sync"; exit 1; }
+    '')
+
     # === doesn't work ===
     ## Nix flake devshell pins - list pinned devshells
     #(pkgs.writeShellScriptBin "nixfds-pins" /*bash*/ ''

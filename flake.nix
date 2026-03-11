@@ -26,8 +26,8 @@
     #/outputs
 
     inputs = {
-        nixpkgs.url = "nixpkgs/nixos-unstable";
-        nixpkgs-stable.url = "nixpkgs/nixos-25.11";
+        nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+        nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
         nur = {
             url = "github:nix-community/NUR";
             inputs.nixpkgs.follows = "nixpkgs";
