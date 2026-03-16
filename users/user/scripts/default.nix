@@ -1,3 +1,6 @@
+
+# TODO: turn into a shell application instead (pkgs.writeShellApplication)
+
 { pkgs, ... }: [
     (pkgs.writeShellScriptBin "mkignore" (builtins.readFile ./mkignore))
 
@@ -38,9 +41,11 @@
                 echo "$NIXOS_REV"
             else
                 echo "[error] invalid rev: '$NIXOS_REV'"
+                NIXOS_REV='<error_nixos>'
             fi
         else
             echo "[error] command 'nixos-version' is unavailable."
+            NIXOS_REV='<error_nixos>'
         fi
 
         # Get current flake
@@ -59,12 +64,37 @@
                 echo "$FLAKE_REV"
             else
                 echo "[error] invalid rev: '$FLAKE_REV'"
+                FLAKE_REV='<error_flake>'
             fi
         else
             echo "[error] flake.lock missing at '$LOCK_FILE'"
+            FLAKE_REV='<error_flake>'
         fi
 
-        [[ "$NIXOS_REV" == "$FLAKE_REV" ]] && echo "in sync" || { echo "out of sync"; exit 1; }
+        printf "status: "
+        [[ "$NIXOS_REV" == "$FLAKE_REV" ]] && { echo "in sync"; exit 0; } || { echo "out of sync"; exit 1; }
+    '')
+
+    (pkgs.writeShellScriptBin "nix-develop" ''
+        if [[ ! -e "$PWD/flake.nix" ]]; then
+            echo "[error] no flake.nix found in '$PWD/flake.nix'"
+            exit 1
+        fi
+
+        if ! command -v nix-pkgvercmp &> /dev/null; then
+            read -p "[warn] 'nix-pkgvercmp' is not available. continue? [y/*]: " answer
+            [[ "$answer" != "y" ]] && exit 1
+        fi
+
+        if ! nix-pkgvercmp; then
+            read -p "[warn] nix revision versions are mismatched. continue? [y/*]: " answer
+            [[ "$answer" != "y" ]] && exit 1
+        fi
+
+        exec nix develop
+    '')
+
+    (pkgs.writeShellScriptBin "git-init" ''
     '')
 
     # === doesn't work ===
