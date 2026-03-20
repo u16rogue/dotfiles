@@ -19,7 +19,19 @@
         SESSION_NAME=$(${pkgs.coreutils}/bin/basename "$1")
         
         # Session
-        ${pkgs.tmux}/bin/tmux new-session -d -s "$SESSION_NAME" -A -c "$SESSION_DIR"
+        if ! ${pkgs.tmux}/bin/tmux new-session -d -s "$SESSION_NAME" -A -c "$SESSION_DIR"; then
+            echo "failed to create new session"
+            exit 1
+        fi
+
+        if [[ -d "$SESSION_DIR/.devshells" ]]; then
+            if ! tmux send-keys -t "$SESSION_NAME" "nix-develop" C-m; then
+                echo "failed to load dev env"
+                exit 1
+            fi
+        fi
+
+        exit 0
     '')
 
     (pkgs.writeShellScriptBin "git-macs" /*bash*/ ''
