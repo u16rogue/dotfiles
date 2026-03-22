@@ -30,6 +30,7 @@
         };
         luaConfigRC.extra = /*lua*/ ''
             local closed_buffers = {}
+            local telescope_ok, telescope_builtin = pcall(require, 'telescope.builtin')
 
             -- show cmd if recording macro
             vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
@@ -55,6 +56,29 @@
 
                 vim.notify('No recently closed file buffer to restore', vim.log.levels.INFO)
             end, { silent = true, desc = 'Restore last closed buffer' })
+
+            if telescope_ok then
+                vim.keymap.set('n', '<leader>ff', telescope_builtin.find_files, { silent = true, desc = 'Find files' })
+                vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, { silent = true, desc = 'Live grep' })
+                vim.keymap.set('n', '<leader>fb', telescope_builtin.buffers, { silent = true, desc = 'Find buffers' })
+                vim.keymap.set('n', 'gd', telescope_builtin.lsp_definitions, { silent = true, desc = 'Go to definition' })
+            end
+
+            vim.api.nvim_create_autocmd('LspAttach', {
+                group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+                callback = function(ev)
+                    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+                    local opts = { buffer = ev.buf, silent = true }
+                    vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
+                    vim.keymap.set('n', '<leader>]', vim.diagnostic.goto_next, opts)
+                    vim.keymap.set('n', '<leader>[', vim.diagnostic.goto_prev, opts)
+                    vim.keymap.set('n', '<leader>\\', function()
+                        vim.diagnostic.open_float(nil, { focus = false })
+                    end, opts)
+                    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+                end,
+            })
 
             -- auto create .nvimsession
             vim.api.nvim_create_autocmd("VimLeavePre", {
@@ -83,6 +107,31 @@
         };
         statusline.lualine = {
             enable = true;
+            activeSection.b = [
+                ''
+                    {
+                      "filetype",
+                      colored = true,
+                      icon_only = true,
+                      icon = { align = 'left' }
+                    }
+                ''
+                ''
+                    {
+                      "filename",
+                      path = 3,
+                      symbols = {modified = ' ', readonly = ' '},
+                      separator = {right = ''}
+                    }
+                ''
+                ''
+                    {
+                      "",
+                      draw_empty = true,
+                      separator = { left = '', right = '' }
+                    }
+                ''
+            ];
         };
         telescope = {
             enable = true;
@@ -136,39 +185,6 @@
                     show_buffer_icons = true;
                     show_buffer_close_icons = false;
                     show_close_icon = false;
-                };
-                highlights = {
-                    background = {
-                        fg = "#7f849c";
-                        bg = "#181825";
-                    };
-                    buffer_visible = {
-                        fg = "#bac2de";
-                        bg = "#181825";
-                    };
-                    buffer_selected = {
-                        fg = "#cdd6f4";
-                        bg = "#313244";
-                        bold = true;
-                    };
-                    numbers_visible = {
-                        fg = "#9399b2";
-                        bg = "#181825";
-                    };
-                    numbers_selected = {
-                        fg = "#cdd6f4";
-                        bg = "#313244";
-                        bold = true;
-                    };
-                    close_button_visible = {
-                        fg = "#9399b2";
-                        bg = "#181825";
-                    };
-                    close_button_selected = {
-                        fg = "#cdd6f4";
-                        bg = "#313244";
-                        bold = true;
-                    };
                 };
             };
             mappings = {
