@@ -13,9 +13,6 @@
         ${pkgs.git}/bin/git commit --amend --no-edit -S
     '')
 
-    (pkgs.writeShellScriptBin "git-init" ''
-    '')
-
     # === doesn't work ===
     ## Nix flake devshell pins - list pinned devshells
     #(pkgs.writeShellScriptBin "nixfds-pins" /*bash*/ ''

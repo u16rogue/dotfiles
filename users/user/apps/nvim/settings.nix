@@ -29,9 +29,33 @@
             #};
         };
         luaConfigRC.extra = /*lua*/ ''
+            local closed_buffers = {}
+
             -- show cmd if recording macro
             vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
             vim.api.nvim_create_autocmd('RecordingLeave', { callback = function() vim.o.cmdheight = 0 end })
+
+            vim.api.nvim_create_autocmd('BufDelete', {
+                callback = function(args)
+                    local name = vim.api.nvim_buf_get_name(args.buf)
+                    if name ~= "" and vim.fn.filereadable(name) == 1 then
+                        table.insert(closed_buffers, name)
+                    end
+                end,
+            })
+
+            vim.keymap.set('n', '<A-S-c>', function()
+                while #closed_buffers > 0 do
+                    local name = table.remove(closed_buffers)
+                    if vim.fn.filereadable(name) == 1 then
+                        vim.cmd('edit ' .. vim.fn.fnameescape(name))
+                        return
+                    end
+                end
+
+                vim.notify('No recently closed file buffer to restore', vim.log.levels.INFO)
+            end, { silent = true, desc = 'Restore last closed buffer' })
+
             -- auto create .nvimsession
             vim.api.nvim_create_autocmd("VimLeavePre", {
                 callback = function()
@@ -46,6 +70,13 @@
                 vim.keymap.set('n', v, 'v:count == 0 ? "g' .. v .. '" : "' .. v .. '"', { expr = true, silent = true })
             end
         '';
+        #highlight = {
+        #    LineNr.fg = "#ffffff";
+        #    CursorLineNr = {
+        #        fg = "#ffffff";
+        #        bold = true;
+        #    };
+        #};
         clipboard = {
             enable = true;
             providers.wl-copy.enable = true;
@@ -101,9 +132,43 @@
             enable = true;
             setupOpts = {
                 options = {
+                    indicator.style = "none";
                     show_buffer_icons = true;
                     show_buffer_close_icons = false;
                     show_close_icon = false;
+                };
+                highlights = {
+                    background = {
+                        fg = "#7f849c";
+                        bg = "#181825";
+                    };
+                    buffer_visible = {
+                        fg = "#bac2de";
+                        bg = "#181825";
+                    };
+                    buffer_selected = {
+                        fg = "#cdd6f4";
+                        bg = "#313244";
+                        bold = true;
+                    };
+                    numbers_visible = {
+                        fg = "#9399b2";
+                        bg = "#181825";
+                    };
+                    numbers_selected = {
+                        fg = "#cdd6f4";
+                        bg = "#313244";
+                        bold = true;
+                    };
+                    close_button_visible = {
+                        fg = "#9399b2";
+                        bg = "#181825";
+                    };
+                    close_button_selected = {
+                        fg = "#cdd6f4";
+                        bg = "#313244";
+                        bold = true;
+                    };
                 };
             };
             mappings = {
@@ -123,7 +188,19 @@
                     group_empty = true;
                     indent_width = 2;
                     indent_markers = { enable = true; inline_arrows = false; };
-                    #icons.glyphs.git = { deleted = ""; ignored = "◌"; renamed = "➜"; staged = "✓"; unmerged = ""; unstaged = "✗"; untracked = "★"; };
+                    icons = {
+                        show.git = true;
+                        git_placement = "right_align";
+                        glyphs.git = {
+                            deleted = "";
+                            ignored = "◌";
+                            renamed = "➜";
+                            staged = "✓";
+                            unmerged = "";
+                            unstaged = "✗";
+                            untracked = "★";
+                        };
+                    };
                 };
                 view = {
                     signcolumn = "yes";
