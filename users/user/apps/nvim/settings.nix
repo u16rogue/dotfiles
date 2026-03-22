@@ -17,6 +17,8 @@
             showmatch      = true;
             termguicolors  = true;
             linebreak      = true;
+            cursorline     = true;
+            cursorlineopt  = "number";
             number         = true;
             relativenumber = true;
             ignorecase     = true;
@@ -29,13 +31,13 @@
             #};
         };
         luaConfigRC.extra = /*lua*/ ''
-            local closed_buffers = {}
-            local telescope_ok, telescope_builtin = pcall(require, 'telescope.builtin')
 
             -- show cmd if recording macro
             vim.api.nvim_create_autocmd('RecordingEnter', { callback = function() vim.o.cmdheight = 1 end })
             vim.api.nvim_create_autocmd('RecordingLeave', { callback = function() vim.o.cmdheight = 0 end })
 
+            -- restore buffers
+            local closed_buffers = {}
             vim.api.nvim_create_autocmd('BufDelete', {
                 callback = function(args)
                     local name = vim.api.nvim_buf_get_name(args.buf)
@@ -56,13 +58,6 @@
 
                 vim.notify('No recently closed file buffer to restore', vim.log.levels.INFO)
             end, { silent = true, desc = 'Restore last closed buffer' })
-
-            if telescope_ok then
-                vim.keymap.set('n', '<leader>ff', telescope_builtin.find_files, { silent = true, desc = 'Find files' })
-                vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, { silent = true, desc = 'Live grep' })
-                vim.keymap.set('n', '<leader>fb', telescope_builtin.buffers, { silent = true, desc = 'Find buffers' })
-                vim.keymap.set('n', 'gd', telescope_builtin.lsp_definitions, { silent = true, desc = 'Go to definition' })
-            end
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -89,18 +84,13 @@
                     end
                 end,
             })
+
             -- word wrap fix
             for _k, v in pairs({ 'j', 'k' }) do
                 vim.keymap.set('n', v, 'v:count == 0 ? "g' .. v .. '" : "' .. v .. '"', { expr = true, silent = true })
             end
         '';
-        #highlight = {
-        #    LineNr.fg = "#ffffff";
-        #    CursorLineNr = {
-        #        fg = "#ffffff";
-        #        bold = true;
-        #    };
-        #};
+        highlight.CursorLineNr.fg = "#ffffff";
         clipboard = {
             enable = true;
             providers.wl-copy.enable = true;
@@ -140,7 +130,7 @@
                 "<C-e>" = "move_selection_previous";
                 "<C-f>" = "select_default";
             };
-            # mappings.lspDefinitions = "gd";
+            mappings.lspDefinitions = "gd";
         };
         git.gitsigns = {
             enable = true;
