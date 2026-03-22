@@ -59,22 +59,6 @@
                 vim.notify('No recently closed file buffer to restore', vim.log.levels.INFO)
             end, { silent = true, desc = 'Restore last closed buffer' })
 
-            vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-                callback = function(ev)
-                    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
-                    local opts = { buffer = ev.buf, silent = true }
-                    vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
-                    vim.keymap.set('n', '<leader>]', vim.diagnostic.goto_next, opts)
-                    vim.keymap.set('n', '<leader>[', vim.diagnostic.goto_prev, opts)
-                    vim.keymap.set('n', '<leader>\\', function()
-                        vim.diagnostic.open_float(nil, { focus = false })
-                    end, opts)
-                    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-                end,
-            })
-
             -- auto create .nvimsession
             vim.api.nvim_create_autocmd("VimLeavePre", {
                 callback = function()
@@ -232,6 +216,13 @@
         lsp = {
             enable = true;
             lspconfig.enable = true;
+            mappings = {
+                hover = "K";
+                renameSymbol = "<F2>";
+                previousDiagnostic = "[";
+                nextDiagnostic = "]";
+                openDiagnosticFloat = "\\";
+            };
         };
         languages = {
             enableTreesitter = true;
