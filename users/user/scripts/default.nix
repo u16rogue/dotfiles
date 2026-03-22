@@ -1,7 +1,13 @@
 
 # TODO: turn into a shell application instead (pkgs.writeShellApplication)
 
-{ pkgs, ... }: [
+{ pkgs, ... }: let
+    realpath = "${pkgs.coreutils}/bin/realpath";
+    basename = "${pkgs.coreutils}/bin/basename";
+    tmux = "${pkgs.tmux}/bin/tmux";
+    git = "${pkgs.git}/bin/git";
+    jq = "";
+in [
     (pkgs.writeShellScriptBin "mkignore" (builtins.readFile ./mkignore))
 
     (pkgs.writeShellScriptBin "tmuxss" /*bash*/ ''
@@ -10,22 +16,22 @@
             exit 1
         fi
         
-        SESSION_DIR=$(${pkgs.coreutils}/bin/realpath "$1")
+        SESSION_DIR=$(${realpath} "$1")
         if [ ! -d "$SESSION_DIR" ]; then
             echo "Invalid directory. Not found: $SESSION_DIR"
             exit 1
         fi
         
-        SESSION_NAME=$(${pkgs.coreutils}/bin/basename "$1")
+        SESSION_NAME=$(${basename} "$1")
         
         # Session
-        if ! ${pkgs.tmux}/bin/tmux new-session -d -s "$SESSION_NAME" -A -c "$SESSION_DIR"; then
+        if ! ${tmux} new-session -d -s "$SESSION_NAME" -A -c "$SESSION_DIR"; then
             echo "failed to create new session"
             exit 1
         fi
 
         if [[ -d "$SESSION_DIR/.devshells" ]]; then
-            if ! tmux send-keys -t "$SESSION_NAME" "nix-develop" C-m; then
+            if ! ${tmux} send-keys -t "$SESSION_NAME" "nix-develop" C-m; then
                 echo "failed to load dev env"
                 exit 1
             fi
