@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [[ ! -e "$PWD/flake.nix" ]]; then
+    echo "[error] no flake.nix found in '$PWD/flake.nix'" >&2
+    exit 1
+fi
+
+if command -v nix-pkgvercmp &> /dev/null; then
+    if ! nix-pkgvercmp; then
+        read -rp "[warn] nix revision versions are mismatched. continue? [y/*]: " answer
+        [[ "$answer" != "y" ]] && exit 1
+    fi
+else
+    read -rp "[warn] 'nix-pkgvercmp' is not available. continue? [y/*]: " answer
+    [[ "$answer" != "y" ]] && exit 1
+fi
+
+exec nix develop

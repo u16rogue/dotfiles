@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Get nixos
+printf "nixos: "
+if command -v "nixos-version" &> /dev/null; then
+    NIXOS_REV=$(nixos-version --json | jq -r '.nixpkgsRevision')
+    if [[ -n "$NIXOS_REV" && "$NIXOS_REV" != "null" ]]; then
+        echo "$NIXOS_REV"
+    else
+        echo "[error] invalid rev: '$NIXOS_REV'" >&2
+        NIXOS_REV='<error_nixos>'
+    fi
+else
+    echo "[error] command 'nixos-version' is unavailable."
+    NIXOS_REV='<error_nixos>'
+fi
+
+# Get current flake
+LOCK_FILE="$PWD/flake.lock"
+printf "flake: "
+if [[ -f "$LOCK_FILE" ]]; then
+    FLAKE_REV=$(jq -r '
+        .nodes
+        | to_entries[]
+        | select((.value.locked.owner // "" | ascii_downcase) == "nixos"
+            and  (.value.locked.repo // "" | ascii_downcase) == "nixpkgs"
+          )
+        | .value.locked.rev
+    ' "$LOCK_FILE" | head -1)
+    if [[ -n "$FLAKE_REV" && "$FLAKE_REV" != "null" ]]; then
+        echo "$FLAKE_REV"
+    else
+        echo "[error] invalid rev: '$FLAKE_REV'" >&2
+        FLAKE_REV='<error_flake>'
+    fi
+else
+    echo "[error] flake.lock missing at '$LOCK_FILE'" >&2
+    FLAKE_REV='<error_flake>'
+fi
+
+printf "status: "
+if [[ "$NIXOS_REV" == "$FLAKE_REV" ]]; then
+    echo "in sync"
+    exit 0
+else
+    echo "out of sync" >&2
+    exit 1
+fi

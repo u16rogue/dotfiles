@@ -2,5 +2,11 @@
 .*
 !.gitignore
 !default.nix
-!tmuxss
-!mkignore
+!mkignore/
+!mkignore/**
+!nix-develop/
+!nix-develop/**
+!nix-pkgvercmp/
+!nix-pkgvercmp/**
+!tmuxss/
+!tmuxss/**

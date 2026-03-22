@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 <output file>"
+    echo "[error] usage: $0 <output file>" >&2
     exit 1
 fi
 
 OUT_FILE=$(realpath "$1")
 if [ -f "$OUT_FILE" ]; then
-    echo "Target $OUT_FILE already exists."
+    echo "[error] target $OUT_FILE already exists." >&2
     exit 1
 fi
 
@@ -26,14 +26,14 @@ while IFS= read -r path; do
 done < <(find "$TARGET_DIR" -mindepth 1 -maxdepth 1 \( ! -path "$OUT_FILE" ! -name ".*" \))
 
 {
-    for path in "''${entries[@]}"; do
+    for path in "${entries[@]}"; do
         rel=$(realpath --relative-to="$TARGET_DIR" "$path")
         if [ ! -d "$path" ]; then
             echo "!$rel"
         fi
     done | sort
 
-    for path in "''${entries[@]}"; do
+    for path in "${entries[@]}"; do
         rel=$(realpath --relative-to="$TARGET_DIR" "$path")
         if [ -d "$path" ]; then
             echo "!$rel/"
