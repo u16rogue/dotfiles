@@ -20,14 +20,31 @@ LOCK_FILE="$PWD/flake.lock"
 printf "flake: "
 if [[ -f "$LOCK_FILE" ]]; then
     FLAKE_REV=$(jq -r '
-        .nodes
-        | to_entries[]
-        | select((.value.locked.owner // "" | ascii_downcase) == "nixos"
-            and  (.value.locked.repo // "" | ascii_downcase) == "nixpkgs"
-          )
-        | .value.locked.rev
-    ' "$LOCK_FILE" | head -1)
-    if [[ -n "$FLAKE_REV" && "$FLAKE_REV" != "null" ]]; then
+        . as $lock
+        | if ($lock.root // null) == null then
+              "<error_flake: missing .root>"
+          else
+              $lock.root as $root_key
+              | if ($lock.nodes[$root_key] // null) == null then
+                    "<error_flake: missing .nodes[\($root_key | @json)]>"
+                else
+                    $lock.nodes[$root_key] as $root_node
+                    | if ($root_node.inputs.nixpkgs // null) == null then
+                          "<error_flake: missing .nodes[\($root_key | @json)].inputs.nixpkgs>"
+                      else
+                          $root_node.inputs.nixpkgs as $nixpkgs_key
+                          | if ($lock.nodes[$nixpkgs_key] // null) == null then
+                                "<error_flake: missing .nodes[\($nixpkgs_key | @json)]>"
+                            elif ($lock.nodes[$nixpkgs_key].locked.rev // null) == null then
+                                "<error_flake: missing .nodes[\($nixpkgs_key | @json)].locked.rev>"
+                            else
+                                $lock.nodes[$nixpkgs_key].locked.rev
+                            end
+                      end
+                end
+          end
+    ' "$LOCK_FILE")
+    if [[ -n "$FLAKE_REV" && "$FLAKE_REV" != "null" && "$FLAKE_REV" != "<error_flake:"* ]]; then
         echo "$FLAKE_REV"
     else
         echo "[error] invalid rev: '$FLAKE_REV'" >&2

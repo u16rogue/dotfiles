@@ -28,6 +28,8 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
         nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
+        flake-parts.url = "github:hercules-ci/flake-parts";
+
         nur = {
             url = "github:nix-community/NUR";
             inputs.nixpkgs.follows = "nixpkgs";
