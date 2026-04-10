@@ -18,6 +18,7 @@ in {
                 network
                 gui
                 (rw-bind (noescape "~/.emulated-root/remmina/home/${username}") (noescape "~/"))
+                (try-readwrite (noescape "/tmp/remmina-share"))
             ]))
         ];
     };
