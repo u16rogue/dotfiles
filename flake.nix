@@ -21,6 +21,21 @@
                         })
                     ];
                 };
+                mistyriver = nixpkgs.lib.nixosSystem {
+                    inherit system;
+                    specialArgs = { inherit inputs system; };
+                    modules = [
+                        inputs.nur.modules.nixos.default
+                        inputs.impermanence.nixosModules.impermanence
+                        inputs.home-manager.nixosModules.home-manager
+                        ./common.nix
+                        ./host/mistyriver/configuration.nix
+                        ((import ./users/user/default.nix) {
+                            persist_path = "/persist"; # TODO: this should be provided by the host
+                            username = "user";
+                        })
+                    ];
+                };
             };
         };
     #/outputs
