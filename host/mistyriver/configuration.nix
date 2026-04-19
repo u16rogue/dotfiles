@@ -37,7 +37,7 @@
         };
 
         initrd = {
-            availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usbhid" "usbstorage" "sd_mod" "rtsx_pci_sdmmc" ];
+            availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usbhid" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
             kernelModules = [ "cryptd" ];
             luks.devices."persist-luks".device = "/dev/disk/by-label/persist-luks";
         };
@@ -90,11 +90,11 @@
             open = true;
             package = config.boot.kernelPackages.nvidiaPackages.latest;
         };
-        cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+        cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
     };
 
     networking = {
-        hostName = "mistylake";
+        hostName = "mistyriver";
         networkmanager.enable = true;
         firewall.enable = true;
     };
