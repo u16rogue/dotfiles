@@ -1,6 +1,6 @@
-{ username, persist_path, ... }: { inputs, pkgs, ... }: {
+{ username, persist_path, host-custom, ... }: { inputs, pkgs, ... }: {
     imports = [
-        ((import ./apps/hyprland/default.nix) { inherit username; })
+        ((import ./apps/hyprland/default.nix) { inherit username host-custom; })
         ((import ./apps/waybar/default.nix) { inherit username; })
         ((import ./apps/kitty/default.nix) { inherit username; })
         ((import ./apps/fuzzel/default.nix) { inherit username; })

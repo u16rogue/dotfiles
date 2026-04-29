@@ -1,4 +1,4 @@
-{ username, ... }: { lib, pkgs, ... }: {
+{ username, host-custom, ... }: { lib, pkgs, ... }: {
 
     programs.hyprland = {
         enable = true;
@@ -54,7 +54,7 @@
                 # only show waybar if mod key is pressed: https://old.reddit.com/r/hyprland/comments/11cdj3d/deleted_by_user/kv3zeuv/
                 bindit = [ "$mainMod, SUPER_L, exec, pkill -SIGUSR1 waybar" ];
                 bindirt = [ "$mainMod, SUPER_L, exec, pkill -SIGUSR1 waybar" ];
-            };
+            } // host-custom.hyprland.settings.append;
             extraConfig = builtins.readFile ./hyprland.conf;
         };
     };

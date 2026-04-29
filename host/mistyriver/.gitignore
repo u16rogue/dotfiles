@@ -2,4 +2,5 @@
 .*
 !.gitignore
 !configuration.nix
+!hyprland.settings.nix
 !install

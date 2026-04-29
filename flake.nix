@@ -28,6 +28,17 @@
                                     ((import ./users/user/default.nix) {
                                         persist_path = "/persist"; # TODO: this should be provided by the host
                                         username = "user";
+                                        host-custom = {
+                                            hyprland.settings =
+                                                let
+                                                    custom = ./host/${host}/hyprland.settings.nix;
+                                                in
+                                                    if builtins.pathExists "${custom}" then
+                                                        ((import custom) {})
+                                                    else
+                                                        { append = {}; }
+                                            ;
+                                        };
                                     })
                                 ];
                             };
