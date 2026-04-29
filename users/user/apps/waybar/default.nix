@@ -10,6 +10,14 @@
                 on-sigusr1 = "toggle";
                 start_hidden = true;
                 modules-left = [ "hyprland/workspaces" "hyprland/submap" ];
+                modules-right = [ "battery" ];
+                "battery" = {
+                    "format" = "{capacity}% {icon}";
+                    "format-charging" = "{capacity}% +";
+                    "format-discharging" = "{capacity}% -";
+                    "tooltip" = false;
+                    "interval" = 30;
+                };
             };
         };
     };
