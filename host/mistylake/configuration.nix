@@ -17,7 +17,7 @@
 
         initrd = {
             availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
-            kernelModules = [ "dm-snapshot" "cryptd" "dm-raid" ];
+            kernelModules = [ "cryptd" "dm-raid" ];
             luks.devices."persist-luks".device = "/dev/md/nixos:persist-raid";
         };
 
