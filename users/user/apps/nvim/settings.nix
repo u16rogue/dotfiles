@@ -232,7 +232,7 @@
             rust.enable = true;
             nix.enable = true;
             bash.enable = true;
-            ts.enable = true;
+            typescript.enable = true;
             python.enable = true;
             lua.enable = true;
             svelte.enable = true;

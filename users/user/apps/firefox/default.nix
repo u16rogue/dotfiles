@@ -1,6 +1,6 @@
 # Sandboxes a web browser
 # TODO: add bookmark by default: moz-extension://2663cd4c-0553-4417-87d1-92fb07ff1b43/onetab.html
-{ username, persist_path }: { pkgs, inputs, system, ... }: let
+{ username, persist_path }: { config, pkgs, inputs, system, ... }: let
     jail = inputs.jail-nix.lib.init pkgs;
 in {
     home-manager.users.${username} = { config, lib, ... }: {
@@ -10,8 +10,9 @@ in {
         # Trick home-manager into generating the profile into our sandbox directory
         # by symlinking the destination
         home.activation.linkFirefox = lib.hm.dag.entryAfter ["writeBoundary"] /*bash*/ ''
-            mkdir -p ~/.emulated-root/firefox/home/${username}/.mozilla
-            ln -sf ~/.emulated-root/firefox/home/${username}/.mozilla ~/
+            mkdir -p ~/.emulated-root/firefox/home/${username}/.config/mozilla/firefox
+            mkdir -p ~/.config/mozilla
+            ln -sf ~/.emulated-root/firefox/home/${username}/.config/mozilla/firefox ~/.config/mozilla/
             if [ ! -e ~/downloads/firefox-downloads ]; then
                 ln -sf ~/.emulated-root/firefox/home/${username}/downloads ~/downloads/firefox-downloads
             fi
@@ -28,6 +29,7 @@ in {
 
         programs.firefox = {
             enable = true;
+            configPath = "${config.xdg.configHome}/mozilla/firefox";
             package = jail "firefox" pkgs.firefox (with jail.combinators; [
                   network
                   gui

@@ -39,7 +39,7 @@
     users.users.${username} = {
         isNormalUser = true;
         extraGroups = [ "wheel" ];
-        hashedPasswordFile = "${persist_path}/users/${username}/password"; # TODO: better way
+        initialPassword = "12345678";
         packages = [];
         shell = pkgs.fish;
     };
