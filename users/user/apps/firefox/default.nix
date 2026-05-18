@@ -10,9 +10,8 @@ in {
         # Trick home-manager into generating the profile into our sandbox directory
         # by symlinking the destination
         home.activation.linkFirefox = lib.hm.dag.entryAfter ["writeBoundary"] /*bash*/ ''
-            mkdir -p ~/.emulated-root/firefox/home/${username}/.config/mozilla/firefox
-            mkdir -p ~/.config/mozilla
-            ln -sf ~/.emulated-root/firefox/home/${username}/.config/mozilla/firefox ~/.config/mozilla/
+            mkdir -p ~/.emulated-root/firefox/home/${username}/.mozilla
+            ln -sf ~/.emulated-root/firefox/home/${username}/.mozilla ~/
             if [ ! -e ~/downloads/firefox-downloads ]; then
                 ln -sf ~/.emulated-root/firefox/home/${username}/downloads ~/downloads/firefox-downloads
             fi
@@ -29,7 +28,7 @@ in {
 
         programs.firefox = {
             enable = true;
-            configPath = "${config.xdg.configHome}/mozilla/firefox";
+            configPath = "${config.xdg.configHome}/.mozilla/firefox";
             package = jail "firefox" pkgs.firefox (with jail.combinators; [
                   network
                   gui
@@ -48,7 +47,7 @@ in {
                               RUNTIME_ARGS+=("--symlink" "''$next_link" "''$prev_link") # 4. and create the symlink (eg "--symlink /nix/store/...profiles.ini ...home-manager-files")
                               prev_link="''$next_link"                                  #
                           done                                                          # 5. ... the nix store file is the real file, host symlink chain is rebuilt, loop ends! ~/.mozilla/firefox/profiles.ini -> ...home-manager-files -> /nix/store/...profiles.ini
-                      done <<< "''$(find ~/.mozilla/ -type l ! -name ".keep" ! -name "lock")"
+                      done <<< "''$(find ~/.mozilla/firefox -type l ! -name ".keep" ! -name "lock")"
                   '')
             ]);
             policies = {};
