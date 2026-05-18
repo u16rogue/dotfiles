@@ -6,6 +6,8 @@
 !mkignore/**
 !nix-develop/
 !nix-develop/**
+!nix-develop-sync/
+!nix-develop-sync/**
 !nix-pkgvercmp/
 !nix-pkgvercmp/**
 !tmuxss/

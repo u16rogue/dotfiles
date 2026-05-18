@@ -10,3 +10,6 @@
 !host/
 !host/mistylake/
 !host/mistyriver/
+!.devshellshook.sh
+!.devshellspkgs.ls
+!.zellij.kdl

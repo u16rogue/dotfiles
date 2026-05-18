@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, ... }:
+{ config, lib, modulesPath, pkgs, ... }:
 
 {
     imports = [
@@ -116,6 +116,10 @@
             "ssh/ssh_host_ed25519_key".source = "/persist/etc/ssh/ssh_host_ed25519_key";
             "ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
         };
+
+        systemPackages = with pkgs; [
+            asusctl
+        ];
     };
 
     time.timeZone = "Asia/Taipei"; # :)

@@ -46,6 +46,16 @@
                         hosts
                     );
             #/nixosConfigurations
+            devShells.${system}.default = pkgs.mkShellNoCC {
+                packages = [];
+                shellHook = /*bash*/ ''
+                    export NIX_FRAGMENT="default"
+                    if [[ -f "$PWD/.devshellshook.sh" ]]; then
+                        source "$PWD/.devshellshook.sh"
+                    fi
+                '';
+            };
+            #/devShells
         };
     #/outputs
 
