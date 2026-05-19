@@ -2,6 +2,7 @@
 .*
 !.gitignore
 !default.nix
+!secrets.nix
 !apps/
 !scripts/
 !packs/

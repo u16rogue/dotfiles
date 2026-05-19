@@ -62,7 +62,7 @@ in {
                     }
                     
                     #main-window[privatebrowsingmode="temporary"] #nav-bar { /* if in private browsing, show the "private browsing" */
-                      margin-right: 140px; 
+                      margin-right: 138px;
                     }
 
                     toolbarbutton[class="titlebar-button titlebar-close"] { /* removes the close button on the top right */

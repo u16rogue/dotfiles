@@ -1,61 +1,67 @@
 # TODO: for packages username shouldn't be hardcoded / sourced
 {
-    outputs = { self, nixpkgs, ... }@inputs:
-        let
-            system = "x86_64-linux";
-            pkgs = import nixpkgs { inherit system; };
-        in {
-            nixosConfigurations =
-                let
-                    host_entries = builtins.readDir ./host;
-                    hosts = pkgs.lib.pipe host_entries [
-                        builtins.attrNames
-                        (builtins.filter (file: host_entries.${file} == "directory"))
-                    ];
-                in
-                    builtins.listToAttrs (
-                        (builtins.map (host: {
-                            name = host;
-                            value = nixpkgs.lib.nixosSystem {
-                                inherit system;
-                                specialArgs = { inherit inputs system; };
-                                modules = [
-                                    inputs.nur.modules.nixos.default
-                                    inputs.impermanence.nixosModules.impermanence
-                                    inputs.home-manager.nixosModules.home-manager
-                                    ./common.nix
-                                    ./host/${host}/configuration.nix
-                                    ((import ./users/user/default.nix) {
-                                        persist_path = "/persist"; # TODO: this should be provided by the host
-                                        username = "user";
-                                        host-custom = {
-                                            hyprland.settings =
-                                                let
-                                                    custom = ./host/${host}/hyprland.settings.nix;
-                                                in
-                                                    if builtins.pathExists "${custom}" then
-                                                        ((import custom) {})
-                                                    else
-                                                        { append = {}; }
-                                            ;
-                                        };
-                                    })
-                                ];
-                            };
-                        }))
-                        hosts
-                    );
-            #/nixosConfigurations
-            devShells.${system}.default = pkgs.mkShellNoCC {
-                packages = [];
-                shellHook = /*bash*/ ''
-                    export NIX_FRAGMENT="default"
-                    if [[ -f "$PWD/.devshellshook.sh" ]]; then
-                        source "$PWD/.devshellshook.sh"
-                    fi
-                '';
+    outputs = inputs@{ flake-parts, nixpkgs, ... }:
+        flake-parts.lib.mkFlake { inherit inputs; } {
+            systems = [ "x86_64-linux" ];
+
+            perSystem = { pkgs, ... }: {
+                devShells.default = pkgs.mkShellNoCC {
+                    packages = [];
+                    shellHook = /*bash*/ ''
+                        export NIX_FRAGMENT="default"
+                        if [[ -f "$PWD/.devshellshook.sh" ]]; then
+                            source "$PWD/.devshellshook.sh"
+                        fi
+                    '';
+                };
             };
-            #/devShells
+
+            flake = {
+                nixosConfigurations =
+                    let
+                        system = "x86_64-linux";
+                        pkgs = import nixpkgs { inherit system; };
+                        host_entries = builtins.readDir ./host;
+                        hosts = pkgs.lib.pipe host_entries [
+                            builtins.attrNames
+                            (builtins.filter (file: host_entries.${file} == "directory"))
+                        ];
+                    in
+                        builtins.listToAttrs (
+                            (builtins.map (host: {
+                                name = host;
+                                value = nixpkgs.lib.nixosSystem {
+                                    inherit system;
+                                    specialArgs = { inherit inputs system; };
+                                    modules = [
+                                        inputs.nur.modules.nixos.default
+                                        inputs.impermanence.nixosModules.impermanence
+                                        inputs.home-manager.nixosModules.home-manager
+                                        inputs.agenix.nixosModules.default
+                                        ./common.nix
+                                        ./host/${host}/configuration.nix
+                                        ((import ./users/user/default.nix) {
+                                            persist_path = "/persist"; # TODO: this should be provided by the host
+                                            username = "user";
+                                            host-custom = {
+                                                hyprland.settings =
+                                                    let
+                                                        custom = ./host/${host}/hyprland.settings.nix;
+                                                    in
+                                                        if builtins.pathExists "${custom}" then
+                                                            ((import custom) {})
+                                                        else
+                                                            { append = {}; }
+                                                ;
+                                            };
+                                        })
+                                    ];
+                                };
+                            }))
+                            hosts
+                        );
+                #/nixosConfigurations
+            };
         };
     #/outputs
 
@@ -90,6 +96,10 @@
         };
         nixpak = { # bwrap utility
             url = "github:nixpak/nixpak";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+        agenix = { # secrets management
+            url = "github:ryantm/agenix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
     };

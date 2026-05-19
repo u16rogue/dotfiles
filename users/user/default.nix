@@ -1,5 +1,7 @@
-{ username, persist_path, host-custom, ... }: { inputs, pkgs, ... }: {
+{ username, persist_path, host-custom, ... }: { config, inputs, pkgs, ... }: {
     imports = [
+        ((import ./secrets.nix) { inherit username; })
+
         ((import ./apps/hyprland/default.nix) { inherit username host-custom; })
         ((import ./apps/waybar/default.nix) { inherit username; })
         ((import ./apps/kitty/default.nix) { inherit username; })
@@ -36,10 +38,11 @@
     };
     # ---
 
+    age.secrets."user-password" = { file = ../../secrets/user-password.age; mode = "0400"; };
     users.users.${username} = {
         isNormalUser = true;
         extraGroups = [ "wheel" ];
-        initialPassword = "12345678";
+        hashedPasswordFile = config.age.secrets."user-password".path;
         packages = [];
         shell = pkgs.fish;
     };
@@ -56,18 +59,15 @@
                 pkgs.bubblewrap
                 pkgs.nushell
             ] ++ ((import ./scripts/default.nix) { inherit pkgs; });
+
             persistence."${persist_path}" = {
                 directories = [
                     "downloads"
                     "media"
                     "documents"
                     "projects"
-                    { directory = ".gnupg"; mode = "0700"; }
-                    { directory = ".ssh"; mode = "0700"; }
-                    { directory = ".local/share/keyrings"; mode = "0700"; }
                 ];
-                files = [
-                ];
+                files = [];
             };
             sessionPath = [];
         };
