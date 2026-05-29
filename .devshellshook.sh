@@ -165,14 +165,14 @@ if [[ ! -e "$EMU_GROUP" ]]; then
 fi
 BWRAP_ARGS+=(--ro-bind "$EMU_GROUP" /etc/group)
 
-# disabled since the config is the project itself ~~Setup devshell and ensure it cant be changed inside the sandbox~~
-#BWRAP_ARGS+=( \
-#    --ro-bind "$PWD/flake.nix" "$PWD/flake.nix"                 \
-#    --ro-bind "$PWD/flake.lock" "$PWD/flake.lock"               \
-#    --ro-bind "$PWD/.devshellshook.sh" "$PWD/.devshellshook.sh" \
-#    --ro-bind "$PWD/.devshellspkgs.ls" "$PWD/.devshellspkgs.ls" \
-#    --ro-bind "$PWD/.zellij.kdl" "$PWD/.zellij.kdl" \
-#)
+# Setup devshell and ensure it cant be changed inside the sandbox
+BWRAP_ARGS+=( \
+    --ro-bind "$PWD/flake.nix" "$PWD/flake.nix"                 \
+    --ro-bind "$PWD/flake.lock" "$PWD/flake.lock"               \
+    --ro-bind "$PWD/.devshellshook.sh" "$PWD/.devshellshook.sh" \
+    --ro-bind "$PWD/.devshellspkgs.ls" "$PWD/.devshellspkgs.ls" \
+    --ro-bind "$PWD/.zellij.kdl" "$PWD/.zellij.kdl" \
+)
 
 # Setup development and nix env's
 while IFS='=' read -r key value; do
@@ -244,4 +244,3 @@ BWRAP_ARGS+=( \
 
 echo "exec bwrap ${BWRAP_ARGS[*]}" > "$EMU_DIR/entrypoint.sh"
 exec bwrap "${BWRAP_ARGS[@]}"
-

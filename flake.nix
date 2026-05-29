@@ -1,4 +1,6 @@
 # TODO: for packages username shouldn't be hardcoded / sourced
+# TODO: include keepass database
+# TODO: finish ssh and gpg keys
 {
     outputs = inputs@{ flake-parts, nixpkgs, ... }:
         flake-parts.lib.mkFlake { inherit inputs; } {
