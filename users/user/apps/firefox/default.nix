@@ -28,7 +28,7 @@ in {
 
         programs.firefox = {
             enable = true;
-            configPath = "${config.xdg.configHome}/.mozilla/firefox";
+            configPath = ".mozilla/firefox";
             package = jail "firefox" pkgs.firefox (with jail.combinators; [
                   network
                   gui
